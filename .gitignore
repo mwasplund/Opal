@@ -1,0 +1,9 @@
+# Visual Studio
+.vs/
+*.user
+.vscode/ipch/
+
+# Build
+out/
+bin/
+obj/

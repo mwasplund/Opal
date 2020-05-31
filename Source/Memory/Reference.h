@@ -101,6 +101,11 @@ namespace Opal::Memory
 			return _reference;
 		}
 
+		const T* GetRaw() const noexcept
+		{
+			return _reference;
+		}
+
 	private:
 		/// <summary>
 		/// Assign the reference to a new value

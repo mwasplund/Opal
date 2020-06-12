@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 
+#if defined(_WIN32)
 #include <Windows.h>
 #include <shlobj.h>
 #include <psapi.h>
@@ -20,6 +21,10 @@
 #endif
 #ifdef max
 #undef max
+#endif
+#elif defined(__linux__)
+#else
+#error Uknown Platform
 #endif
 
 export module Opal;
@@ -40,9 +45,10 @@ export module Opal;
 #include "Memory/Reference.h"
 #include "Memory/ReferenceCounted.h"
 
+#ifdef _WIN32
 #include "System/SmartHandle.h"
+#endif
 #include "System/DynamicLibraryManager.h"
-#include "System/ProcessManager.h"
 #include "System/MockEnvironment.h"
 #include "System/MockFileSystem.h"
 #include "System/MockProcessManager.h"

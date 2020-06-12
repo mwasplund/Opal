@@ -94,16 +94,17 @@ namespace Opal::IO
 
 			return password;
 #else
+			// TODO: Implement for realz
 			// www.cplusplus.com/articles/E6vU7k9E/
-			#error Linux Not Implemented
+			std::string result;
+			std::getline(std::cin, result);
+			return result;
 #endif
 		}
 
 	private:
 #ifdef WIN32
 		HANDLE _inputHandle;
-#else
-		#error Linux Not Implemented
 #endif
 	};
 }

@@ -28,21 +28,21 @@ namespace Opal::System
 		Path GetUserProfileDirectory() override final
 		{
 			#ifdef _WIN32
+				char userProfile[MAX_PATH];
+				HRESULT result = SHGetFolderPath(
+					nullptr,
+					CSIDL_PROFILE,
+					nullptr,
+					SHGFP_TYPE_CURRENT,
+					userProfile);
+				if (result != S_OK)
+					throw std::runtime_error("SHGetFolderPath failed.");
 
-			char userProfile[MAX_PATH];
-			HRESULT result = SHGetFolderPath(
-				nullptr,
-				CSIDL_PROFILE,
-				nullptr,
-				SHGFP_TYPE_CURRENT,
-				userProfile);
-			if (result != S_OK)
-				throw std::runtime_error("SHGetFolderPath failed.");
-
-			return Path(userProfile);
-
+				return Path(userProfile);
+			#elif defined(__linux__)
+				throw std::runtime_error("GetUserProfileDirectory: Not Implemented");
 			#else
-			#error NOT IMPLEMENTED
+				#error Unknown Platform
 			#endif
 		}
 
@@ -69,11 +69,13 @@ namespace Opal::System
 		std::time_t GetLastWriteTime(const Path& path) override final
 		{
 			// TODO: Remove when C++20 is ready
-			#if defined ( _WIN32 )
+			#if defined (_WIN32)
 				struct _stat64 fileInfo;
 				if (_stat64(path.ToString().c_str(), &fileInfo) != 0)
 					throw std::runtime_error("Failed to get last write time.");
 				return fileInfo.st_mtime;
+			#elif defined(__linux__)
+				throw std::runtime_error("GetLastWriteTime: Not Implemented");
 			#else
 				auto fileTime = std::filesystem::last_write_time(path.ToString());
 				auto systemTime = std::chrono::file_time::to_sys(fileTime);
@@ -88,7 +90,7 @@ namespace Opal::System
 		void SetLastWriteTime(const Path& path, std::time_t value) override final
 		{
 			// TODO: Remove when C++20 is ready
-			#if defined ( _WIN32 )
+			#if defined (_WIN32)
 				// Open a handle on the file
 				auto fileHandle = CreateFile(
 					path.ToString().c_str(),
@@ -116,6 +118,8 @@ namespace Opal::System
 					auto error = GetLastError();
 					throw std::runtime_error("Failed to close file handle: " + std::to_string(error));
 				}
+			#elif defined(__linux__)
+				throw std::runtime_error("SetLastWriteTime: Not Implemented");
 			#else
 				auto systemTime = std::chrono::system_clock::from_time_t(value);
 				auto fileTime = std::chrono::file_time::from_sys(systemTime);
@@ -128,10 +132,10 @@ namespace Opal::System
 		/// </summary>
 		std::shared_ptr<IInputFile> OpenRead(const Path& path, bool isBinary) override final
 		{
-			int mode = std::fstream::in;
+			std::ios_base::openmode mode = std::fstream::in;
 			if (isBinary)
 			{
-				mode = mode | std::fstream::binary;
+				mode = static_cast<std::ios_base::openmode>(mode | std::fstream::binary);
 			}
 
 			auto file = std::fstream(path.ToString(), mode);
@@ -149,10 +153,10 @@ namespace Opal::System
 		/// </summary>
 		std::shared_ptr<IOutputFile> OpenWrite(const Path& path, bool isBinary) override final
 		{
-			int mode = std::fstream::out;
+			std::ios_base::openmode mode = std::fstream::out;
 			if (isBinary)
 			{
-				mode = mode | std::fstream::binary;
+				mode = static_cast<std::ios_base::openmode>(mode | std::fstream::binary);
 			}
 
 			auto file = std::fstream(path.ToString(), mode);
@@ -228,14 +232,16 @@ namespace Opal::System
 		}
 
 	private:
-		FILETIME TimetToFileTime(std::time_t time)
-		{
-			LONGLONG ll = Int32x32To64(time, 10000000) + 116444736000000000;
-			FILETIME result;
-			result.dwLowDateTime = (DWORD) ll;
-			result.dwHighDateTime = ll >>32;
+		#if defined (_WIN32)
+			FILETIME TimetToFileTime(std::time_t time)
+			{
+				LONGLONG ll = Int32x32To64(time, 10000000) + 116444736000000000;
+				FILETIME result;
+				result.dwLowDateTime = (DWORD) ll;
+				result.dwHighDateTime = ll >>32;
 
-			return result;
-		}
+				return result;
+			}
+		#endif
 	};
 }

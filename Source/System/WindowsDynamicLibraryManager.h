@@ -1,4 +1,4 @@
-﻿// <copyright file="DynamicLibraryManager.h" company="Soup">
+﻿// <copyright file="WindowsDynamicLibraryManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -9,23 +9,23 @@ namespace Opal::System
 	/// <summary>
 	/// A platform specific dynamic library manager
 	/// </summary>
-	export class Library
+	export class WindowsLibrary
 	{
 	public:
-		Library(HINSTANCE handle) :
+		WindowsLibrary(HINSTANCE handle) :
 			_handle(handle)
 		{
 		}
 
-		Library(Library&& other) :
+		WindowsLibrary(WindowsLibrary&& other) :
 			_handle(std::move(other._handle))
 		{
 			other._handle = nullptr;
 		}
 
-		Library(Library& other) = delete;
+		WindowsLibrary(WindowsLibrary& other) = delete;
 
-		~Library()
+		~WindowsLibrary()
 		{
 			// Free the DLL module.
 			if (_handle != nullptr)
@@ -100,10 +100,10 @@ namespace Opal::System
 	/// <summary>
 	/// A platform specific dynamic library manager
 	/// </summary>
-	export class DynamicLibraryManager
+	export class WindowsDynamicLibraryManager
 	{
 	public:
-		static Library LoadDynamicLibrary(const char* libraryName)
+		static WindowsLibrary LoadDynamicLibrary(const char* libraryName)
 		{
 			// Get a handle to the DLL module.
 			auto libraryHandle = ::LoadLibrary(TEXT(libraryName));
@@ -115,7 +115,7 @@ namespace Opal::System
 				throw "ERROR Failed to get library handle";
 			}
 
-			return Library(libraryHandle);
+			return WindowsLibrary(libraryHandle);
 		}
 	};
 }

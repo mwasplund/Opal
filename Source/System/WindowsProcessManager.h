@@ -1,4 +1,4 @@
-﻿// <copyright file="PlatformProcessManager.h" company="Soup">
+﻿// <copyright file="WindowsProcessManager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
@@ -8,15 +8,15 @@
 namespace Opal::System
 {
 	/// <summary>
-	/// A platform specific process executable using system
+	/// A windows splatform specific process executable using system
 	/// </summary>
-	export class PlatformProcessManager : public IProcessManager
+	export class WindowsProcessManager : public IProcessManager
 	{
 	public:
 		/// <summary>
-		/// Initializes a new instance of the <see cref='PlatformProcessManager'/> class.
+		/// Initializes a new instance of the <see cref='WindowsProcessManager'/> class.
 		/// </summary>
-		PlatformProcessManager()
+		WindowsProcessManager()
 		{
 		}
 

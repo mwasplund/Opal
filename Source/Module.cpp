@@ -45,15 +45,16 @@ export module Opal;
 #include "Memory/Reference.h"
 #include "Memory/ReferenceCounted.h"
 
-#ifdef _WIN32
-#include "System/SmartHandle.h"
-#endif
-#include "System/DynamicLibraryManager.h"
 #include "System/MockEnvironment.h"
 #include "System/MockFileSystem.h"
 #include "System/MockProcessManager.h"
-#include "System/PlatformProcessManager.h"
 #include "System/ScopedFileSystemRegister.h"
 #include "System/ScopedProcessManagerRegister.h"
 #include "System/STLEnvironment.h"
 #include "System/STLFileSystem.h"
+
+#ifdef _WIN32
+#include "System/SmartHandle.h"
+#include "System/WindowsDynamicLibraryManager.h"
+#include "System/WindowsProcessManager.h"
+#endif

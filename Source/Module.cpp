@@ -22,6 +22,9 @@
 #ifdef max
 #undef max
 #endif
+#ifdef CreateProcess
+#undef CreateProcess
+#endif
 #elif defined(__linux__)
 #else
 #error Uknown Platform

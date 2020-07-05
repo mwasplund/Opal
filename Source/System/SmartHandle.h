@@ -18,6 +18,23 @@ namespace Opal::System
 		{
 		}
 
+		SmartHandle(const SmartHandle&) = delete;
+		SmartHandle& operator=(const SmartHandle&) = delete;
+
+		SmartHandle(SmartHandle&& other) :
+			_handle(other._handle)
+		{
+			other._handle = INVALID_HANDLE_VALUE;
+		}
+
+		SmartHandle& operator=(SmartHandle&& other)
+		{
+			Close();
+			_handle = other._handle;
+			other._handle = INVALID_HANDLE_VALUE;
+			return *this;
+		}
+
 		~SmartHandle()
 		{
 			Close();

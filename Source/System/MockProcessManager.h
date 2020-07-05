@@ -4,6 +4,7 @@
 
 #pragma once
 #include "IProcessManager.h"
+#include "MockProcess.h"
 
 namespace Opal::System
 {
@@ -18,6 +19,7 @@ namespace Opal::System
 		/// Initializes a new instance of the <see cref='MockProcessManager'/> class.
 		/// </summary>
 		MockProcessManager() :
+			m_uniqueId(1),
 			_requests(),
 			_processFileName(Path("C:/testlocation/SoupCMDTest.exe")),
 			_executeResults()
@@ -55,10 +57,10 @@ namespace Opal::System
 		/// <summary>
 		/// Gets the process file name
 		/// </summary>
-		Path GetProcessFileName() override final
+		Path GetCurrentProcessFileName() override final
 		{
 			std::stringstream message;
-			message << "GetProcessFileName";
+			message << "GetCurrentProcessFileName";
 
 			_requests.push_back(message.str());
 			return _processFileName;
@@ -67,13 +69,14 @@ namespace Opal::System
 		/// <summary>
 		/// Creates a process for the provided executable path
 		/// </summary>
-		ProcessResult Execute(
-			const Path& application,
+		std::shared_ptr<IProcess> CreateProcess(
+			const Path& executable,
 			const std::string& arguments,
 			const Path& workingDirectory) override final
 		{
 			std::stringstream message;
-			message << "Execute: [" << workingDirectory.ToString() << "] " << application.ToString() << " " << arguments;
+			auto id = m_uniqueId++;
+			message << "CreateProcess: " << id << " [" << workingDirectory.ToString() << "] " << executable.ToString() << " " << arguments;
 
 			_requests.push_back(message.str());
 
@@ -81,23 +84,26 @@ namespace Opal::System
 			auto findOutput = _executeResults.find(message.str());
 			if (findOutput != _executeResults.end())
 			{
-				return {
+				return std::make_shared<MockProcess>(
+					id,
+					_requests,
 					0,
 					findOutput->second,
-					std::string(),
-				};
+					std::string());
 			}
 			else
 			{
-				return {
+				return std::make_shared<MockProcess>(
+					id,
+					_requests,
 					0,
 					std::string(),
-					std::string(),
-				};
+					std::string());
 			}
 		}
 
 	private:
+		std::atomic<int> m_uniqueId;
 		std::vector<std::string> _requests;
 		Path _processFileName;
 		std::map<std::string, std::string> _executeResults;

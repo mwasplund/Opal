@@ -3,16 +3,10 @@
 // </copyright>
 
 #pragma once
+#include "IProcess.h"
 
 namespace Opal::System
 {
-	export struct ProcessResult
-	{
-		int ExitCode;
-		std::string StdOut;
-		std::string StdErr;
-	};
-
 	/// <summary>
 	/// The process manager interface
 	/// Interface mainly used to allow for unit testing client code
@@ -42,13 +36,13 @@ namespace Opal::System
 		/// <summary>
 		/// Gets the process file name
 		/// </summary>
-		virtual Path GetProcessFileName() = 0;
+		virtual Path GetCurrentProcessFileName() = 0;
 
 		/// <summary>
 		/// Creates a process for the provided executable path
 		/// </summary>
-		virtual ProcessResult Execute(
-			const Path& application,
+		virtual std::shared_ptr<IProcess> CreateProcess(
+			const Path& executable,
 			const std::string& arguments,
 			const Path& workingDirectory) = 0;
 

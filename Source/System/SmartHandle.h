@@ -6,8 +6,9 @@
 
 namespace Opal::System
 {
-	struct SmartHandle
+	export class SmartHandle
 	{
+	public:
 		SmartHandle(HANDLE handle) :
 			_handle(handle)
 		{
@@ -40,6 +41,16 @@ namespace Opal::System
 			Close();
 		}
 
+		HANDLE Get()
+		{
+			return _handle;
+		}
+
+		bool IsValid()
+		{
+			return _handle != INVALID_HANDLE_VALUE;
+		}
+
 		void Close()
 		{
 			if (_handle != INVALID_HANDLE_VALUE)
@@ -50,6 +61,7 @@ namespace Opal::System
 			}
 		}
 
+	private:
 		HANDLE _handle;
 	};
 }

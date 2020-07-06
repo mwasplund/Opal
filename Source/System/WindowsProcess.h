@@ -58,33 +58,39 @@ namespace Opal::System
 			securityAttributes.lpSecurityDescriptor = nullptr; 
 
 			// Create a pipe for the child process's STDOUT.
-			SmartHandle childStdOutRead;
-			SmartHandle childStdOutWrite;
-			if (!CreatePipe(&childStdOutRead._handle, &childStdOutWrite._handle, &securityAttributes, pipeBufferSize))
+			HANDLE childStdOutRead;
+			HANDLE childStdOutWrite;
+			if (!CreatePipe(&childStdOutRead, &childStdOutWrite, &securityAttributes, pipeBufferSize))
 				throw std::runtime_error("Execute CreatePipe Failed");
+			m_stdOutReadHandle = SmartHandle(childStdOutRead);
+			m_stdOutWriteHandle = SmartHandle(childStdOutWrite);
 
 			// Ensure the read handle to the pipe for STDOUT is not inherited.
-			if (!SetHandleInformation(childStdOutRead._handle, HANDLE_FLAG_INHERIT, 0))
+			if (!SetHandleInformation(m_stdOutReadHandle.Get(), HANDLE_FLAG_INHERIT, 0))
 				throw std::runtime_error("Execute SetHandleInformation Failed");
 
 			// Create a pipe for the child process's STDERR.
-			SmartHandle childStdErrRead;
-			SmartHandle childStdErrWrite;
-			if (!CreatePipe(&childStdErrRead._handle, &childStdErrWrite._handle, &securityAttributes, pipeBufferSize))
+			HANDLE childStdErrRead;
+			HANDLE childStdErrWrite;
+			if (!CreatePipe(&childStdErrRead, &childStdErrWrite, &securityAttributes, pipeBufferSize))
 				throw std::runtime_error("Execute CreatePipe Failed");
+			m_stdErrReadHandle = SmartHandle(childStdErrRead);
+			m_stdErrWriteHandle = SmartHandle(childStdErrWrite);
 
 			// Ensure the read handle to the pipe for STDERR is not inherited.
-			if (!SetHandleInformation(childStdErrRead._handle, HANDLE_FLAG_INHERIT, 0))
+			if (!SetHandleInformation(m_stdErrReadHandle.Get(), HANDLE_FLAG_INHERIT, 0))
 				throw std::runtime_error("Execute SetHandleInformation Failed");
 
 			// Create a pipe for the child process's STDIN.
-			SmartHandle childStdInRead;
-			SmartHandle childStdInWrite;
-			if (!CreatePipe(&childStdInRead._handle, &childStdInWrite._handle, &securityAttributes, 0))
+			HANDLE childStdInRead;
+			HANDLE childStdInWrite;
+			if (!CreatePipe(&childStdInRead, &childStdInWrite, &securityAttributes, 0))
 				throw std::runtime_error("Execute CreatePipe Failed");
+			m_stdInReadHandle = SmartHandle(childStdInRead);
+			m_stdInWriteHandle = SmartHandle(childStdInWrite);
 
 			// Ensure the write handle to the pipe for STDIN is not inherited.
-			if (!SetHandleInformation(childStdInWrite._handle, HANDLE_FLAG_INHERIT, 0))
+			if (!SetHandleInformation(m_stdInWriteHandle.Get(), HANDLE_FLAG_INHERIT, 0))
 				throw std::runtime_error("Execute SetHandleInformation Failed");
 
 			// Setup the process creation parameters
@@ -97,9 +103,9 @@ namespace Opal::System
 			STARTUPINFOA startupInfo = {};
 			ZeroMemory(&startupInfo, sizeof(STARTUPINFOA));
 			startupInfo.cb = sizeof(startupInfo);
-			startupInfo.hStdError = childStdErrWrite._handle;
-			startupInfo.hStdOutput = childStdOutWrite._handle;
-			startupInfo.hStdInput = childStdInRead._handle;
+			startupInfo.hStdError = m_stdErrWriteHandle.Get();
+			startupInfo.hStdOutput = m_stdOutWriteHandle.Get();
+			startupInfo.hStdInput = m_stdInReadHandle.Get();
 			startupInfo.dwFlags |= STARTF_USESTDHANDLES;
 
 			PROCESS_INFORMATION processInfo = {};
@@ -108,7 +114,7 @@ namespace Opal::System
 			// Start the process
 			if (!CreateProcessA(
 				m_executable.ToString().c_str(),
-				const_cast<char*>(argumentsString.c_str()),
+				argumentsString.data(),
 				processAttributes,
 				threadAttributes,
 				inheritHandles,
@@ -125,12 +131,6 @@ namespace Opal::System
 			// Store the runtime handles
 			m_processHandle = SmartHandle(processInfo.hProcess);
 			m_threadHandle = SmartHandle(processInfo.hThread);
-			m_stdOutReadHandle = std::move(childStdOutRead);
-			m_stdOutWriteHandle = std::move(childStdOutWrite);
-			m_stdErrReadHandle = std::move(childStdErrRead);
-			m_stdErrWriteHandle = std::move(childStdErrWrite);
-			m_stdInReadHandle = std::move(childStdInRead);
-			m_stdInWriteHandle = std::move(childStdInWrite);
 		}
 
 		/// <summary>
@@ -139,7 +139,7 @@ namespace Opal::System
 		void WaitForExit() override final
 		{
 			// Wait until child process exits.
-			auto waitResult = WaitForSingleObject(m_processHandle._handle, INFINITE);
+			auto waitResult = WaitForSingleObject(m_processHandle.Get(), INFINITE);
 			switch (waitResult)
 			{
 				case WAIT_OBJECT_0:
@@ -160,7 +160,7 @@ namespace Opal::System
 
 			// Get the exit code
 			DWORD exitCode;
-			if (!GetExitCodeProcess(m_processHandle._handle, &exitCode))
+			if (!GetExitCodeProcess(m_processHandle.Get(), &exitCode))
 			{
 				auto error = GetLastError();
 				throw std::runtime_error("Execute GetExitCodeProcess Failed: " + std::to_string(error));
@@ -180,7 +180,7 @@ namespace Opal::System
 			// Read on output
 			while (true)
 			{
-				if(!ReadFile(m_stdOutReadHandle._handle, buffer, BufferSize, &dwRead, nullptr))
+				if(!ReadFile(m_stdOutReadHandle.Get(), buffer, BufferSize, &dwRead, nullptr))
 					break;
 				if (dwRead == 0)
 					break;
@@ -191,7 +191,7 @@ namespace Opal::System
 			// Read all errors
 			while (true)
 			{
-				if(!ReadFile(m_stdErrReadHandle._handle, buffer, BufferSize, &dwRead, nullptr))
+				if(!ReadFile(m_stdErrReadHandle.Get(), buffer, BufferSize, &dwRead, nullptr))
 					break;
 				if (dwRead == 0)
 					break;

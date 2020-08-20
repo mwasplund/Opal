@@ -206,11 +206,26 @@ namespace Opal::System
 			auto result = std::vector<DirectoryEntry>();
 			for(auto& child : std::filesystem::directory_iterator(path.ToString()))
 			{
-				result.push_back(
-					{
-						Path(child.path().string()),
-						child.is_directory()
-					});
+				auto directoryEntry = DirectoryEntry();
+				directoryEntry.Path = Path(child.path().string());
+				directoryEntry.IsDirectory = child.is_directory();
+
+				// TODO: Remove when C++20 is ready
+				#if defined (_WIN32)
+					struct _stat64 fileInfo;
+					auto pathString = directoryEntry.Path.ToString();
+					if (_stat64(pathString.c_str(), &fileInfo) != 0)
+						throw std::runtime_error("Failed to get file stats.");
+					directoryEntry.Size = fileInfo.st_size;
+					directoryEntry.AccessTime = fileInfo.st_atime;
+					directoryEntry.ModifiedTime = fileInfo.st_mtime;
+					directoryEntry.CreateTime = fileInfo.st_ctime;
+					directoryEntry.Attributes = GetFileAttributesA(pathString.c_str());
+				#else
+					throw std::runtime_error("GetLastWriteTime: Not Implemented");
+				#endif
+
+				result.push_back(std::move(directoryEntry));
 			}
 
 			return result;

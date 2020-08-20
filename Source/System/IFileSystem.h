@@ -12,6 +12,13 @@ namespace Opal::System
 	{
 		Path Path;
 		bool IsDirectory;
+		uint64_t Size;
+		std::time_t AccessTime;
+		std::time_t CreateTime;
+		std::time_t ModifiedTime;
+
+		// TODO: Make generic
+		uint32_t Attributes;
 	};
 
 	/// <summary>

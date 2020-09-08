@@ -14,7 +14,7 @@ namespace Opal
 		/// <summary>
 		/// Try parse the value
 		/// </summary>
-		static bool TryParse(const std::string& value, SemanticVersion& result)
+		static bool TryParse(const std::string_view value, SemanticVersion& result)
 		{
 			// TODO: Invert this so TryParse is the default and Parse adds an exception
 			// it is way faster in the fail case
@@ -34,11 +34,12 @@ namespace Opal
 		/// <summary>
 		/// Parse the value
 		/// </summary>
-		static SemanticVersion Parse(const std::string& value)
+		static SemanticVersion Parse(const std::string_view value)
 		{
 			// Parse the integer values
+			// TODO: Perform my own search to save string creation
 			std::vector<int> values;
-			auto stream = std::istringstream(value);
+			auto stream = std::istringstream(std::string(value));
 			std::string stringValue;
 			while (std::getline(stream, stringValue, '.'))
 			{

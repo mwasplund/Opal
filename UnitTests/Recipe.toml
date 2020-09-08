@@ -1,0 +1,13 @@
+Name = "Opal.UnitTests"
+Version = "1.0.0"
+Type = "Executable"
+Dependencies = [
+	"SoupTest@0.1.0",
+	"../Source/",
+]
+Source = [
+	"gen/Main.cpp"
+]
+IncludePaths = [
+	"./",
+]

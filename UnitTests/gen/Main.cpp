@@ -9,7 +9,7 @@
 #include <vector>
 
 import Opal;
-import SoupTest;
+import Soup.Test.Assert;
 
 using namespace Opal;
 using namespace Opal::System;

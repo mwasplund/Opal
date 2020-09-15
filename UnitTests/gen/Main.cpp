@@ -13,7 +13,7 @@ import Soup.Test.Assert;
 
 using namespace Opal;
 using namespace Opal::System;
-using namespace SoupTest;
+using namespace Soup::Test;
 
 #include "Utils/PathTests.gen.h"
 #include "Utils/SemanticVersionTests.gen.h"

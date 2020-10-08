@@ -34,6 +34,11 @@ namespace Opal
 		/// <summary>
 		/// Set the active ids to use for each event
 		/// </summary>
+		static int GetActiveId()
+		{
+			return s_activeId;
+		}
+
 		static void SetActiveId(int value)
 		{
 			s_activeId = value;

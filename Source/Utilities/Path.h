@@ -94,7 +94,11 @@ namespace Opal
 				// Pull apart the directories and remove the last one
 				// TODO: This can be done in place and then a substring returned for perf gains
 				auto directories = DecomposeDirectoriesString(GetDirectories());
-				if (directories.size() == 1 && directories[0] == RelativeDirectory)
+				if (directories.empty())
+				{
+					// No-op when at the root
+				}
+				else if (directories.size() == 1 && directories[0] == RelativeDirectory)
 				{
 					// If this is only a relative folder symbol then replace with the parent symbol
 					directories[0] = RelativeParentDirectory;

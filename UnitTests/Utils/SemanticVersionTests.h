@@ -9,7 +9,7 @@ namespace Soup::UnitTests
 	class SemanticVersionTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void DefaultInitializer()
 		{
 			auto uut = SemanticVersion();
@@ -18,14 +18,14 @@ namespace Soup::UnitTests
 			Assert::AreEqual(0, uut.GetPatch(), "Patch version must match.");
 		}
 
-		[[Theory]]
-		[[InlineData(1, 2, 3)]]
-		[[InlineData(3, 2, 1)]]
-		[[InlineData(1, 1, 1)]]
-		[[InlineData(100, 200, 300)]]
-		[[InlineData(1, 2, 333)]]
-		[[InlineData(1, 222, 3)]]
-		[[InlineData(111, 2, 3)]]
+		// [[Theory]]
+		// [[InlineData(1, 2, 3)]]
+		// [[InlineData(3, 2, 1)]]
+		// [[InlineData(1, 1, 1)]]
+		// [[InlineData(100, 200, 300)]]
+		// [[InlineData(1, 2, 333)]]
+		// [[InlineData(1, 222, 3)]]
+		// [[InlineData(111, 2, 3)]]
 		void InitializeValues(int major, int minor, int patch)
 		{
 			auto uut = SemanticVersion(major, minor, patch);
@@ -34,7 +34,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(patch, uut.GetPatch(), "Patch version must match.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorEqual()
 		{
 			auto uut = SemanticVersion(1, 2, 3);
@@ -45,7 +45,7 @@ namespace Soup::UnitTests
 				"Verify are equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualMajor()
 		{
 			auto uut = SemanticVersion(1, 2, 3);
@@ -56,7 +56,7 @@ namespace Soup::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualMinor()
 		{
 			auto uut = SemanticVersion(1, 2, 3);
@@ -67,7 +67,7 @@ namespace Soup::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void OperatorNotEqualPatch()
 		{
 			auto uut = SemanticVersion(1, 2, 3);
@@ -78,15 +78,15 @@ namespace Soup::UnitTests
 				"Verify are not equal.");
 		}
 
-		[[Theory]]
-		[[InlineData("1.2.3", 1, 2, 3)]]
-		[[InlineData("3.2.1", 3, 2, 1)]]
-		[[InlineData("1.1.1", 1, 1, 1)]]
-		[[InlineData("100.200.300", 100, 200, 300)]]
-		[[InlineData("1.2.333", 1, 2, 333)]]
-		[[InlineData("1.222.3", 1, 222, 3)]]
-		[[InlineData("111.2.3", 111, 2, 3)]]
-		[[InlineData("0.0.0", 0, 0, 0)]]
+		// [[Theory]]
+		// [[InlineData("1.2.3", 1, 2, 3)]]
+		// [[InlineData("3.2.1", 3, 2, 1)]]
+		// [[InlineData("1.1.1", 1, 1, 1)]]
+		// [[InlineData("100.200.300", 100, 200, 300)]]
+		// [[InlineData("1.2.333", 1, 2, 333)]]
+		// [[InlineData("1.222.3", 1, 222, 3)]]
+		// [[InlineData("111.2.3", 111, 2, 3)]]
+		// [[InlineData("0.0.0", 0, 0, 0)]]
 		void ParseValues(std::string value, int major, int minor, int patch)
 		{
 			auto uut = SemanticVersion::Parse(value);
@@ -96,12 +96,12 @@ namespace Soup::UnitTests
 				"Verify matches expected values.");
 		}
 
-		[[Theory]]
-		[[InlineData("1.2.3", true, 1, 2, 3)]] // Success
-		[[InlineData("0.0.0", true, 0, 0, 0)]] // All zeros success
-		[[InlineData("", false, 0, 0, 0)]] // Empty fails
-		[[InlineData("1", false, 0, 0, 0)]] // Major only fails
-		[[InlineData("1.2", false, 0, 0, 0)]] // Major/Minor only fails
+		// [[Theory]]
+		// [[InlineData("1.2.3", true, 1, 2, 3)]] // Success
+		// [[InlineData("0.0.0", true, 0, 0, 0)]] // All zeros success
+		// [[InlineData("", false, 0, 0, 0)]] // Empty fails
+		// [[InlineData("1", false, 0, 0, 0)]] // Major only fails
+		// [[InlineData("1.2", false, 0, 0, 0)]] // Major/Minor only fails
 		void TryParseValues(std::string value, bool expectedResult, int major, int minor, int patch)
 		{
 			SemanticVersion uut;
@@ -116,9 +116,9 @@ namespace Soup::UnitTests
 				"Verify matches expected values.");
 		}
 
-		[[Theory]]
-		[[InlineData(1, 2, 3, "1.2.3")]]
-		[[InlineData(0, 0, 0, "0.0.0")]]
+		// [[Theory]]
+		// [[InlineData(1, 2, 3, "1.2.3")]]
+		// [[InlineData(0, 0, 0, "0.0.0")]]
 		void ToStringValues(int major, int minor, int patch, std::string expected)
 		{
 			auto uut = SemanticVersion(major, minor, patch);

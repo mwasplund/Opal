@@ -9,7 +9,7 @@ namespace Soup::UnitTests
 	class PathTests
 	{
 	public:
-		[[Fact]]
+		// [[Fact]]
 		void DefaultInitializer()
 		{
 			auto uut = Path();
@@ -25,7 +25,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(".\\", uut.ToAlternateString(), "Verify alternate string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Empty()
 		{
 			auto uut = Path("");
@@ -41,7 +41,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(".\\", uut.ToAlternateString(), "Verify alternate string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void RelativePath_Simple()
 		{
 			auto uut = Path("./");
@@ -57,7 +57,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(".\\", uut.ToAlternateString(), "Verify alternate string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void RelativePath_Parent()
 		{
 			auto uut = Path("../");
@@ -73,7 +73,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("..\\", uut.ToAlternateString(), "Verify alternate string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void RelativePath_Complex()
 		{
 			auto uut = Path("myfolder/anotherfolder/file.txt");
@@ -89,7 +89,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual(".\\myfolder\\anotherfolder\\file.txt", uut.ToAlternateString(), "Verify alternate string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void SimpleAbsolutePath()
 		{
 			auto uut = Path("C:/myfolder/anotherfolder/file.txt");
@@ -104,7 +104,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("C:/myfolder/anotherfolder/file.txt", uut.ToString(), "Verify string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void AlternativeDirectoriesPath()
 		{
 			auto uut = Path("C:\\myfolder/anotherfolder\\file.txt");
@@ -119,49 +119,49 @@ namespace Soup::UnitTests
 			Assert::AreEqual("C:/myfolder/anotherfolder/file.txt", uut.ToString(), "Verify string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void RemoveEmptyDirectoryInside()
 		{
 			auto uut = Path("C:/myfolder//file.txt");
 			Assert::AreEqual("C:/myfolder/file.txt", uut.ToString(), "Verify string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void RemoveParentDirectoryInside()
 		{
 			auto uut = Path("C:/myfolder/../file.txt");
 			Assert::AreEqual("C:/file.txt", uut.ToString(), "Verify string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void RemoveTwoParentDirectoryInside()
 		{
 			auto uut = Path("C:/myfolder/myfolder2/../../file.txt");
 			Assert::AreEqual("C:/file.txt", uut.ToString(), "Verify string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void LeaveParentDirectoryAtStart()
 		{
 			auto uut = Path("../file.txt");
 			Assert::AreEqual("../file.txt", uut.ToString(), "Verify string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void CurrentDirectoryAtStart()
 		{
 			auto uut = Path("./file.txt");
 			Assert::AreEqual("./file.txt", uut.ToString(), "Verify string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void CurrentDirectoryAtStartAlternate()
 		{
 			auto uut = Path(".\\../file.txt");
 			Assert::AreEqual("../file.txt", uut.ToString(), "Verify string value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Concatenate_Simple()
 		{
 			auto path1 = Path("C:/MyRootFolder");
@@ -171,7 +171,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("C:/MyRootFolder/MyFolder/MyFile.txt", uut.ToString(), "Verify value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Concatenate_Empty()
 		{
 			auto path1 = Path("C:/MyRootFolder");
@@ -182,7 +182,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("C:/MyRootFolder/", uut.ToString(), "Verify value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Concatenate_RootFile()
 		{
 			auto path1 = Path("C:");
@@ -192,7 +192,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("C:/MyFile.txt", uut.ToString(), "Verify value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Concatenate_RootFolder()
 		{
 			auto path1 = Path("C:");
@@ -202,7 +202,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("C:/MyFolder/", uut.ToString(), "Verify value matches.");
 		}
 	
-		[[Fact]]
+		// [[Fact]]
 		void Concatenate_UpDirectory()
 		{
 			auto path1 = Path("C:/MyRootFolder");
@@ -212,7 +212,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("C:/NewRoot/MyFile.txt", uut.ToString(), "Verify value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void Concatenate_UpDirectoryBeginning()
 		{
 			auto path1 = Path("../MyRootFolder");
@@ -222,7 +222,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("../NewRoot/MyFile.txt", uut.ToString(), "Verify value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void SetFileExtension_Replace()
 		{
 			auto uut = Path("../MyFile.txt");
@@ -231,7 +231,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("../MyFile.awe", uut.ToString(), "Verify value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void SetFileExtension_Replace_Rooted()
 		{
 			auto uut = Path("C:/MyFolder/MyFile.txt");
@@ -240,7 +240,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("C:/MyFolder/MyFile.awe", uut.ToString(), "Verify value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void SetFileExtension_Add()
 		{
 			auto uut = Path("../MyFile");
@@ -249,7 +249,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("../MyFile.awe", uut.ToString(), "Verify value matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetRelativeTo_Empty()
 		{
 			auto uut = Path("File.txt");
@@ -260,7 +260,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("./File.txt", result.ToString(), "Verify result matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetRelativeTo_SingleRelative()
 		{
 			auto uut = Path("Folder/File.txt");
@@ -271,7 +271,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("./File.txt", result.ToString(), "Verify result matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetRelativeTo_UpParentRelative()
 		{
 			auto uut = Path("../Folder/Target");
@@ -282,7 +282,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("./Target", result.ToString(), "Verify result matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetRelativeTo_MismatchRelative()
 		{
 			auto uut = Path("Folder1/File.txt");
@@ -293,7 +293,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("../Folder1/File.txt", result.ToString(), "Verify result matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetRelativeTo_Rooted_DifferentRoot()
 		{
 			auto uut = Path("C:/Folder1/File.txt");
@@ -304,7 +304,7 @@ namespace Soup::UnitTests
 			Assert::AreEqual("C:/Folder1/File.txt", result.ToString(), "Verify result matches.");
 		}
 
-		[[Fact]]
+		// [[Fact]]
 		void GetRelativeTo_Rooted_SingleFolder()
 		{
 			auto uut = Path("C:/Folder1/File.txt");

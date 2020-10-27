@@ -173,7 +173,7 @@ namespace Opal::System
 
 			// Read all and write to stdout
 			// TODO: May want to switch over to a background thread with peak to read in order
-			DWORD dwRead = -1;
+			DWORD dwRead;
 			const int BufferSize = 256;
 			char buffer[BufferSize + 1];
 

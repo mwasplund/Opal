@@ -239,9 +239,9 @@ namespace Opal
 
 			// Determine how many of the directories match
 			auto directories = DecomposeDirectoriesString(GetDirectories());
-			int minDirectories = std::min(baseDirectories.size(), directories.size());
-			int countMatching = 0;
-			for (int i = 0; i < minDirectories; i++)
+			auto minDirectories = std::min(baseDirectories.size(), directories.size());
+			auto countMatching = 0;
+			for (auto i = 0; i < minDirectories; i++)
 			{
 				if (baseDirectories[i] != directories[i])
 				{

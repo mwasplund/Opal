@@ -31,6 +31,7 @@ namespace Opal::System
 			if (_handle != nullptr)
 			{
 				auto result = FreeLibrary(_handle);
+				(result);
 				// Ignore failures
 				_handle = nullptr;
 			}
@@ -56,7 +57,7 @@ namespace Opal::System
 				throw "AddressOfNames is null";
 
 			auto names = (BYTE**)((size_t)_handle + exports->AddressOfNames);
-			for (int i = 0; i < exports->NumberOfNames; i++)
+			for (auto i = 0u; i < exports->NumberOfNames; i++)
 				callback((char*)_handle + (size_t)names[i]);
 		}
 
@@ -112,7 +113,7 @@ namespace Opal::System
 			if (libraryHandle == nullptr)
 			{
 				auto lastError = GetLastError();
-				throw "ERROR Failed to get library handle";
+				throw "ERROR Failed to get library handle" + std::to_string(lastError);
 			}
 
 			return WindowsLibrary(libraryHandle);

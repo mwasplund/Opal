@@ -33,7 +33,7 @@ namespace Opal::System
 			auto sizeRead = GetModuleFileNameA(
 				handle,
 				buffer.data(),
-				buffer.size());
+				static_cast<DWORD>(buffer.size()));
 			if (sizeRead == 0)
 			{
 				auto error = GetLastError();

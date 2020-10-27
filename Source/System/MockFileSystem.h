@@ -108,15 +108,15 @@ namespace Opal::System
 			}
 			else
 			{
-				auto message = "Cannot find file for last write time: " + path.ToString();
-				throw std::runtime_error(message);
+				auto errorMessage = "Cannot find file for last write time: " + path.ToString();
+				throw std::runtime_error(errorMessage);
 			}
 		}
 
 		/// <summary>
 		/// Set the last write time of the file/directory
 		/// </summary>
-		void SetLastWriteTime(const Path& path, std::time_t value) override final
+		void SetLastWriteTime(const Path& path, std::time_t /*value*/) override final
 		{
 			std::stringstream message;
 			message << "SetLastWriteTime: " << path.ToString();
@@ -149,8 +149,8 @@ namespace Opal::System
 			}
 			else
 			{
-				auto message = "Cannot open read: " + path.ToString();
-				throw std::runtime_error(message);
+				auto errorMessage = "Cannot open read: " + path.ToString();
+				throw std::runtime_error(errorMessage);
 			}
 		}
 

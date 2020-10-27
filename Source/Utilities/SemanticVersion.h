@@ -38,13 +38,13 @@ namespace Opal
 		{
 			// Parse the integer values
 			// TODO: Perform my own search to save string creation
-			std::vector<int> values;
+			std::vector<short> values;
 			auto stream = std::istringstream(std::string(value));
 			std::string stringValue;
 			while (std::getline(stream, stringValue, '.'))
 			{
 				auto intValue = std::stoi(stringValue);
-				values.push_back(intValue);
+				values.push_back(static_cast<short>(intValue));
 			}
 
 			if (values.size() != 3)
@@ -72,7 +72,7 @@ namespace Opal
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SemanticVersion"/> class.
 		/// </summary>
-		SemanticVersion(short major, short minor, short patch) :
+		SemanticVersion(int major, int minor, int patch) :
 			_major(major),
 			_minor(minor),
 			_patch(patch)

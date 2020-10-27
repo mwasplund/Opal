@@ -240,8 +240,8 @@ namespace Opal
 			// Determine how many of the directories match
 			auto directories = DecomposeDirectoriesString(GetDirectories());
 			auto minDirectories = std::min(baseDirectories.size(), directories.size());
-			auto countMatching = 0;
-			for (auto i = 0; i < minDirectories; i++)
+			size_t countMatching = 0;
+			for (auto i = 0u; i < minDirectories; i++)
 			{
 				if (baseDirectories[i] != directories[i])
 				{
@@ -260,14 +260,14 @@ namespace Opal
 			}
 			else
 			{
-				for (int i = countMatching; i < baseDirectories.size(); i++)
+				for (auto i = countMatching; i < baseDirectories.size(); i++)
 				{
 					resultDirectories.push_back(RelativeParentDirectory);
 				}
 			}
 
 			// Copy over the remaining entities from the target path
-			for (int i = countMatching; i < directories.size(); i++)
+			for (auto i = countMatching; i < directories.size(); i++)
 			{
 				resultDirectories.push_back(directories[i]);
 			}

@@ -49,8 +49,10 @@ export module Opal;
 #include "Memory/ReferenceCounted.h"
 
 #include "System/MockFileSystem.h"
+#include "System/MockLibraryManager.h"
 #include "System/MockProcessManager.h"
 #include "System/ScopedFileSystemRegister.h"
+#include "System/ScopedLibraryManagerRegister.h"
 #include "System/ScopedProcessManagerRegister.h"
 #include "System/STLFileSystem.h"
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="IProcessManager.h" company="Soup">
+﻿// <copyright file="IProcess.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 

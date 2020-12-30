@@ -14,10 +14,10 @@ namespace Opal::System
 	export class WindowsDynamicLibraryManager : public ILibraryManager
 	{
 	public:
-		static std::shared_ptr<ILibrary> LoadDynamicLibrary(const char* libraryName)
+		std::shared_ptr<ILibrary> LoadDynamicLibrary(const Path& library) override final
 		{
 			// Get a handle to the DLL module.
-			auto libraryHandle = ::LoadLibrary(TEXT(libraryName));
+			auto libraryHandle = ::LoadLibrary(TEXT(library.ToString().c_str()));
 
 			// If the handle is valid, try to get the function address.
 			if (libraryHandle == nullptr)

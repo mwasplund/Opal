@@ -72,7 +72,17 @@ namespace Opal::System
 			#if defined (_WIN32)
 				struct _stat64 fileInfo;
 				if (_stat64(path.ToString().c_str(), &fileInfo) != 0)
-					throw std::runtime_error("Failed to get last write time.");
+				{
+					switch (errno)
+					{
+						case ENOENT:
+							throw std::runtime_error("Not Found get last write time: " + path.ToString());
+						case EINVAL:
+							throw std::runtime_error("Invalid parameter get last write time: " + path.ToString());
+						default:
+							throw std::runtime_error("Unexpected error get last write time: " + path.ToString());
+					}
+				}
 				return fileInfo.st_mtime;
 			#elif defined(__linux__)
 				throw std::runtime_error("GetLastWriteTime: Not Implemented");

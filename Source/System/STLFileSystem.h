@@ -52,7 +52,7 @@ namespace Opal::System
 		Path GetCurrentDirectory2() override final
 		{
 			auto current = std::filesystem::current_path();
-			return Path(current.string());
+			return Path(current.string() + "/");
 		}
 
 		/// <summary>

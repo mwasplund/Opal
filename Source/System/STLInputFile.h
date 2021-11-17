@@ -14,7 +14,7 @@ namespace Opal::System
 	class STLInputFile : public IInputFile
 	{
 	public:
-		STLInputFile(std::fstream stream) :
+		STLInputFile(std::ifstream stream) :
 			_stream(std::move(stream))
 		{
 		}
@@ -36,6 +36,6 @@ namespace Opal::System
 		}
 
 	private:
-		std::fstream _stream;
+		std::ifstream _stream;
 	};
 }

@@ -148,7 +148,7 @@ namespace Opal::System
 				mode = static_cast<std::ios_base::openmode>(mode | std::fstream::binary);
 			}
 
-			auto file = std::fstream(path.ToString(), mode);
+			auto file = std::ifstream(path.ToString(), mode);
 			if (file.fail())
 			{
 				auto message = "OpenRead Failed: File missing. " + path.ToString();
@@ -169,7 +169,7 @@ namespace Opal::System
 				mode = static_cast<std::ios_base::openmode>(mode | std::fstream::binary);
 			}
 
-			auto file = std::fstream(path.ToString(), mode);
+			auto file = std::ofstream(path.ToString(), mode);
 			if (file.fail())
 			{
 				auto message = "OpenWrite Failed: " + path.ToString();

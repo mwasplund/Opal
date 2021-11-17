@@ -6,6 +6,9 @@ TestState RunPathTests()
 	auto className = "PathTests";
 	auto testClass = std::make_shared<Soup::UnitTests::PathTests>();
 	TestState state = { 0, 0 };
+	state += Soup::Test::RunTest(className, "Load_Empty", [&testClass]() { testClass->Load_Empty(); });
+	state += Soup::Test::RunTest(className, "Load_Root", [&testClass]() { testClass->Load_Root(); });
+	state += Soup::Test::RunTest(className, "Load_AbsoluteFile", [&testClass]() { testClass->Load_AbsoluteFile(); });
 	state += Soup::Test::RunTest(className, "DefaultInitializer", [&testClass]() { testClass->DefaultInitializer(); });
 	state += Soup::Test::RunTest(className, "Empty", [&testClass]() { testClass->Empty(); });
 	state += Soup::Test::RunTest(className, "RelativePath_Simple", [&testClass]() { testClass->RelativePath_Simple(); });

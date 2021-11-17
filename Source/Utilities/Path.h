@@ -25,6 +25,16 @@ namespace Opal
 		static constexpr std::string_view RelativeParentDirectory = "..";
 
 	public:
+		static Path Load(std::string value)
+		{
+			auto result = Path();
+
+			result.LoadDirect(std::move(value));
+
+			return result;
+		}
+
+	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Path"/> class.
 		/// </summary>
@@ -355,242 +365,266 @@ namespace Opal
 			return result;
 		}
 
-private:
-	void ParsePath(std::string_view value)
-	{
-		// Break out the individual components of the path
-		std::vector<std::string_view> directories;
-		std::string_view root;
-		std::string_view fileName;
-		DecomposeRawPathString(
-			value,
-			directories,
-			root,
-			fileName);
-
-		// Normalize any unnecessary directories in the raw path
-		bool hasRoot = !root.empty();
-		NormalizeDirectories(directories, hasRoot);
-
-		// Rebuild the string value
-		SetState(
-			directories,
-			root,
-			fileName);
-	}
-
-	void DecomposeRawPathString(
-		std::string_view value,
-		std::vector<std::string_view>& directories,
-		std::string_view& root,
-		std::string_view& fileName)
-	{
-		size_t current = 0;
-		size_t next = 0;
-		bool isFirst = true;
-		while ((next = value.find_first_of(AllValidDirectorySeparators, current)) != std::string::npos)
+	private:
+		/// <summary>
+		/// Helper that loads a string directly into the path value
+		/// </summary>
+		void LoadDirect(std::string value)
 		{
-			auto directory = value.substr(current, next - current);
+			_value = std::move(value);
 
-			// Check if the first entry is a root
-			if (isFirst)
+			auto firstSeparator = _value.find_first_of(DirectorySeparator);
+			if (firstSeparator != std::string::npos && IsRoot(std::string_view(_value.c_str(), firstSeparator)))
 			{
-				if (IsRoot(directory))
+				_rootEndLocation = firstSeparator;
+			}
+
+			auto lastSeparator = _value.find_last_of(DirectorySeparator);
+			if (lastSeparator != std::string::npos && lastSeparator != _value.size() - 1)
+			{
+				_fileNameStartLocation = lastSeparator + 1;
+			}
+			else
+			{
+				_fileNameStartLocation = _value.size();
+			}
+		}
+
+		void ParsePath(std::string_view value)
+		{
+			// Break out the individual components of the path
+			std::vector<std::string_view> directories;
+			std::string_view root;
+			std::string_view fileName;
+			DecomposeRawPathString(
+				value,
+				directories,
+				root,
+				fileName);
+
+			// Normalize any unnecessary directories in the raw path
+			bool hasRoot = !root.empty();
+			NormalizeDirectories(directories, hasRoot);
+
+			// Rebuild the string value
+			SetState(
+				directories,
+				root,
+				fileName);
+		}
+
+		void DecomposeRawPathString(
+			std::string_view value,
+			std::vector<std::string_view>& directories,
+			std::string_view& root,
+			std::string_view& fileName)
+		{
+			size_t current = 0;
+			size_t next = 0;
+			bool isFirst = true;
+			while ((next = value.find_first_of(AllValidDirectorySeparators, current)) != std::string::npos)
+			{
+				auto directory = value.substr(current, next - current);
+
+				// Check if the first entry is a root
+				if (isFirst)
 				{
-					root = directory;
+					if (IsRoot(directory))
+					{
+						root = directory;
+					}
+					else
+					{
+						// Ensure that the unrooted path starts with a relative symbol
+						if (!IsRelativeDirectory(directory))
+						{
+							directories.push_back(RelativeDirectory);
+						}
+
+						directories.push_back(directory);
+					}
+
+					isFirst = false;
 				}
 				else
 				{
-					// Ensure that the unrooted path starts with a relative symbol
-					if (!IsRelativeDirectory(directory))
-					{
-						directories.push_back(RelativeDirectory);
-					}
-
 					directories.push_back(directory);
 				}
 
-				isFirst = false;
-			}
-			else
-			{
-				directories.push_back(directory);
+				current = next + 1;
 			}
 
-			current = next + 1;
-		}
-
-		// Check if there are characters beyond the last separator
-		if (current != value.size())
-		{
-			auto directory = value.substr(current, next - current);
-
-			// Check if still on the first entry
-			// Could be empty root or single filename
-			if (isFirst)
+			// Check if there are characters beyond the last separator
+			if (current != value.size())
 			{
-				if (IsRoot(directory))
+				auto directory = value.substr(current, next - current);
+
+				// Check if still on the first entry
+				// Could be empty root or single filename
+				if (isFirst)
 				{
-					root = directory;
+					if (IsRoot(directory))
+					{
+						root = directory;
+					}
+					else
+					{
+						// Ensure that the unrooted path starts with a relative symbol
+						if (!IsRelativeDirectory(directory))
+						{
+							directories.push_back(RelativeDirectory);
+						}
+
+						fileName = directory;
+					}
+
+					isFirst = false;
 				}
 				else
 				{
-					// Ensure that the unrooted path starts with a relative symbol
-					if (!IsRelativeDirectory(directory))
-					{
-						directories.push_back(RelativeDirectory);
-					}
-
 					fileName = directory;
 				}
-
-				isFirst = false;
-			}
-			else
-			{
-				fileName = directory;
-			}
-		}
-
-		// If we saw nothing then add a single relative directory
-		if (isFirst)
-		{
-			directories.push_back(RelativeDirectory);
-		}
-	}
-
-	bool IsRelativeDirectory(const std::string_view directory)
-	{
-		return directory == RelativeDirectory || directory == RelativeParentDirectory;
-	}
-
-	std::vector<std::string_view> DecomposeDirectoriesString(std::string_view value) const
-	{
-		size_t current = 0;
-		size_t next = 0;
-		auto directories = std::vector<std::string_view>();
-		while ((next = value.find_first_of(DirectorySeparator, current)) != std::string::npos)
-		{
-			auto directory = value.substr(current, next - current);
-			if (!directory.empty())
-			{
-				directories.push_back(directory);
 			}
 
-			current = next + 1;
-		}
-
-		// Ensure the last separator was at the end of the string
-		if (current != value.size())
-		{
-			throw std::runtime_error("The directories string must end in a separator");
-		}
-
-		return directories;
-	}
-
-	bool IsRoot(std::string_view value)
-	{
-		// Check for drive letter
-		if (value.size() == 2)
-		{
-			if (std::isalpha(value[0]) && value[1] == LetterDriveSpecifier)
+			// If we saw nothing then add a single relative directory
+			if (isFirst)
 			{
-				return true;
+				directories.push_back(RelativeDirectory);
 			}
 		}
 
-		return false;
-	}
-
-	/// <summary>
-	/// Resolve any up directory tokens or empty (double separator) directories that are inside a path
-	/// </summary>
-	void NormalizeDirectories(
-		std::vector<std::string_view>& directories,
-		bool hasRoot) const
-	{
-		// Remove as many up directories as we can
-		for (size_t i = 0; i < directories.size(); i++)
+		bool IsRelativeDirectory(const std::string_view directory)
 		{
-			// Remove empty directories (double separator) or relative directories if rooted or not at start
-			if (directories.at(i).empty() ||
-				((hasRoot || i != 0) && directories.at(i) == RelativeDirectory))
+			return directory == RelativeDirectory || directory == RelativeParentDirectory;
+		}
+
+		std::vector<std::string_view> DecomposeDirectoriesString(std::string_view value) const
+		{
+			size_t current = 0;
+			size_t next = 0;
+			auto directories = std::vector<std::string_view>();
+			while ((next = value.find_first_of(DirectorySeparator, current)) != std::string::npos)
 			{
-				directories.erase(
-					directories.begin() + (i),
-					directories.begin() + (i + 1));
-				i -= 1;
-			}
-			else
-			{
-				// Check if we can combine any parent directories
-				// Allow the first directory to remain a parent
-				if (i != 0)
+				auto directory = value.substr(current, next - current);
+				if (!directory.empty())
 				{
-					// Remove a parent directory if possible
-					if (directories.at(i) == RelativeParentDirectory &&
-						directories.at(i - 1) != RelativeParentDirectory)
+					directories.push_back(directory);
+				}
+
+				current = next + 1;
+			}
+
+			// Ensure the last separator was at the end of the string
+			if (current != value.size())
+			{
+				throw std::runtime_error("The directories string must end in a separator");
+			}
+
+			return directories;
+		}
+
+		bool IsRoot(std::string_view value)
+		{
+			// Check for drive letter
+			if (value.size() == 2)
+			{
+				if (std::isalpha(value[0]) && value[1] == LetterDriveSpecifier)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Resolve any up directory tokens or empty (double separator) directories that are inside a path
+		/// </summary>
+		void NormalizeDirectories(
+			std::vector<std::string_view>& directories,
+			bool hasRoot) const
+		{
+			// Remove as many up directories as we can
+			for (size_t i = 0; i < directories.size(); i++)
+			{
+				// Remove empty directories (double separator) or relative directories if rooted or not at start
+				if (directories.at(i).empty() ||
+					((hasRoot || i != 0) && directories.at(i) == RelativeDirectory))
+				{
+					directories.erase(
+						directories.begin() + (i),
+						directories.begin() + (i + 1));
+					i -= 1;
+				}
+				else
+				{
+					// Check if we can combine any parent directories
+					// Allow the first directory to remain a parent
+					if (i != 0)
 					{
-						// If the previous is a relative then just replace it
-						if (directories.at(i - 1) == RelativeDirectory)
+						// Remove a parent directory if possible
+						if (directories.at(i) == RelativeParentDirectory &&
+							directories.at(i - 1) != RelativeParentDirectory)
 						{
-							directories.erase(
-								directories.begin() + (i - 1),
-								directories.begin() + (i));
-							i -= 1;
-						}
-						else
-						{
-							// Remove the directories and move back
-							directories.erase(
-								directories.begin() + (i - 1),
-								directories.begin() + (i + 1));
-							i -= 2;
+							// If the previous is a relative then just replace it
+							if (directories.at(i - 1) == RelativeDirectory)
+							{
+								directories.erase(
+									directories.begin() + (i - 1),
+									directories.begin() + (i));
+								i -= 1;
+							}
+							else
+							{
+								// Remove the directories and move back
+								directories.erase(
+									directories.begin() + (i - 1),
+									directories.begin() + (i + 1));
+								i -= 2;
+							}
 						}
 					}
 				}
 			}
 		}
-	}
 
-	/// <summary>
-	/// Convert the components of the path into the string value
-	/// </summary>
-	void SetState(
-		const std::vector<std::string_view>& directories,
-		std::string_view root,
-		std::string_view fileName)
-	{
-		std::stringstream stringBuilder;
-
-		if (!root.empty())
+		/// <summary>
+		/// Convert the components of the path into the string value
+		/// </summary>
+		void SetState(
+			const std::vector<std::string_view>& directories,
+			std::string_view root,
+			std::string_view fileName)
 		{
-			stringBuilder << root << DirectorySeparator;
+			std::stringstream stringBuilder;
+
+			if (!root.empty())
+			{
+				stringBuilder << root << DirectorySeparator;
+			}
+
+			for (size_t i = 0; i < directories.size(); i++)
+			{
+				stringBuilder << directories[i] << DirectorySeparator;
+			}
+
+			if (!fileName.empty())
+			{
+				stringBuilder << fileName;
+			}
+
+			// Store the persistant state
+			_value = stringBuilder.str();
+			_rootEndLocation = root.size();
+			_fileNameStartLocation = _value.size() - fileName.size();
 		}
 
-		for (size_t i = 0; i < directories.size(); i++)
+		const std::string_view GetDirectories() const
 		{
-			stringBuilder << directories[i] << DirectorySeparator;
+			return std::string_view(
+				_value.data() + _rootEndLocation,
+				_fileNameStartLocation - _rootEndLocation);
 		}
-
-		if (!fileName.empty())
-		{
-			stringBuilder << fileName;
-		}
-
-		// Store the persistant state
-		_value = stringBuilder.str();
-		_rootEndLocation = root.size();
-		_fileNameStartLocation = _value.size() - fileName.size();
-	}
-
-	const std::string_view GetDirectories() const
-	{
-		return std::string_view(
-			_value.data() + _rootEndLocation,
-			_fileNameStartLocation - _rootEndLocation);
-	}
 
 	private:
 		std::string _value;

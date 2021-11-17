@@ -14,7 +14,7 @@ namespace Opal::System
 	class STLOutputFile : public IOutputFile
 	{
 	public:
-		STLOutputFile(std::fstream stream) :
+		STLOutputFile(std::ofstream stream) :
 			_stream(std::move(stream))
 		{
 		}
@@ -36,6 +36,6 @@ namespace Opal::System
 		}
 
 	private:
-		std::fstream _stream;
+		std::ofstream _stream;
 	};
 }

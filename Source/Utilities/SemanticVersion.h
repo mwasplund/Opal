@@ -46,16 +46,26 @@ namespace Opal
 				auto intValue = std::stoi(stringValue);
 				values.push_back(static_cast<short>(intValue));
 			}
-
-			if (values.size() != 3)
+			
+			if (values.size() < 1 || values.size() > 3)
 			{
-				throw std::runtime_error("The version string must have three values.");
+				throw std::runtime_error("The version string must one to three values.");
 			}
 
+			auto major = values[0];
+
+			std::optional<int> minor = std::nullopt;
+			if (values.size() >= 2)
+				minor = values[1];
+
+			std::optional<int> patch = std::nullopt;
+			if (values.size() >= 3)
+				patch = values[2];
+
 			return SemanticVersion(
-				values[0],
-				values[1],
-				values[2]);
+				major,
+				minor,
+				patch);
 		}
 
 	public:
@@ -64,15 +74,29 @@ namespace Opal
 		/// </summary>
 		SemanticVersion() :
 			_major(0),
-			_minor(0),
-			_patch(0)
+			_minor(std::nullopt),
+			_patch(std::nullopt)
+		{
+		}
+
+		SemanticVersion(int major) :
+			_major(major),
+			_minor(std::nullopt),
+			_patch(std::nullopt)
+		{
+		}
+
+		SemanticVersion(int major, std::optional<int> minor) :
+			_major(major),
+			_minor(minor),
+			_patch(std::nullopt)
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SemanticVersion"/> class.
 		/// </summary>
-		SemanticVersion(int major, int minor, int patch) :
+		SemanticVersion(int major, std::optional<int> minor, std::optional<int> patch) :
 			_major(major),
 			_minor(minor),
 			_patch(patch)
@@ -90,17 +114,43 @@ namespace Opal
 		/// <summary>
 		/// Gets or sets the version minor
 		/// </summary>
+		bool HasMinor() const
+		{
+			return _minor.has_value();
+		}
 		int GetMinor() const
 		{
-			return _minor;
+			if (!HasMinor())
+				throw std::runtime_error("Semantic version does not have a minor value");
+			return _minor.value();
+		}
+		int GetMinorOrDefault() const
+		{
+			if (HasMinor())
+				return _minor.value();
+			else
+				return 0;
 		}
 
 		/// <summary>
 		/// Gets or sets the version patch
 		/// </summary>
+		bool HasPatch() const
+		{
+			return _patch.has_value();
+		}
 		int GetPatch() const
 		{
-			return _patch;
+			if (!HasPatch())
+				throw std::runtime_error("Semantic version does not have a patch value");
+			return _patch.value();
+		}
+		int GetPatchOrDefault() const
+		{
+			if (HasPatch())
+				return _patch.value();
+			else
+				return 0;
 		}
 
 		/// <summary>
@@ -108,9 +158,9 @@ namespace Opal
 		/// </summary>
 		bool operator ==(const SemanticVersion& rhs) const
 		{
-			return _major == rhs. _major &&
-				_minor == rhs. _minor &&
-				_patch == rhs. _patch;
+			return _major == rhs._major &&
+				GetMinorOrDefault() == rhs.GetMinorOrDefault() &&
+				GetPatchOrDefault() == rhs.GetPatchOrDefault();
 		}
 
 		/// <summary>
@@ -118,9 +168,9 @@ namespace Opal
 		/// </summary>
 		bool operator !=(const SemanticVersion& rhs) const
 		{
-			return _major != rhs. _major ||
-				_minor != rhs. _minor ||
-				_patch != rhs. _patch;
+			return _major != rhs._major ||
+				GetMinorOrDefault() != rhs.GetMinorOrDefault() ||
+				GetPatchOrDefault() != rhs.GetPatchOrDefault();
 		}
 
 		/// <summary>
@@ -128,15 +178,15 @@ namespace Opal
 		/// </summary>
 		bool operator <(const SemanticVersion& rhs) const
 		{
-			return _major < rhs. _major ||
-				_minor < rhs. _minor ||
-				_patch < rhs. _patch;
+			return _major < rhs._major ||
+				GetMinorOrDefault() < rhs.GetMinorOrDefault() ||
+				GetPatchOrDefault() < rhs.GetPatchOrDefault();
 		}
 		bool operator >(const SemanticVersion& rhs) const
 		{
-			return _major > rhs. _major ||
-				_minor > rhs. _minor ||
-				_patch > rhs. _patch;
+			return _major > rhs._major ||
+				GetMinorOrDefault() > rhs.GetMinorOrDefault() ||
+				GetPatchOrDefault() > rhs.GetPatchOrDefault();
 		}
 
 		/// <summary>
@@ -144,17 +194,24 @@ namespace Opal
 		/// </summary>
 		std::string ToString() const
 		{
-			// "{Major}.{Minor}.{Patch}"
+			// "{Major}(.{Minor}(.{Patch}))"
 			std::stringstream stringBuilder;
-			stringBuilder << _major << ".";
-			stringBuilder << _minor << ".";
-			stringBuilder << _patch;
+			stringBuilder << _major;
+			if (HasMinor())
+			{
+				stringBuilder << "." << GetMinor();
+				if (HasPatch())
+				{
+					stringBuilder << "." << GetPatch();
+				}
+			}
+
 			return stringBuilder.str();
 		}
 
 	private:
 		int _major;
-		int _minor;
-		int _patch;
+		std::optional<int> _minor;
+		std::optional<int> _patch;
 	};
 }

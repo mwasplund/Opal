@@ -1,0 +1,7 @@
+Version = 1
+[Projects]
+"C++" = [
+	{ Name = "Opal.UnitTests", Version = "../UnitTests" },
+	{ Name = "Soup.Test.Assert", Version = "0.2.0" },
+	{ Name = "Opal", Version = "../Source/" },
+]

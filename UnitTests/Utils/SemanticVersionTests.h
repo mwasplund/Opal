@@ -14,8 +14,8 @@ namespace Soup::UnitTests
 		{
 			auto uut = SemanticVersion();
 			Assert::AreEqual(0, uut.GetMajor(), "Major version must match.");
-			Assert::AreEqual(0, uut.GetMinor(), "Minor version must match.");
-			Assert::AreEqual(0, uut.GetPatch(), "Patch version must match.");
+			Assert::IsFalse(uut.HasMinor(), "Minor version must match.");
+			Assert::IsFalse(uut.HasPatch(), "Patch version must match.");
 		}
 
 		// [[Theory]]
@@ -100,8 +100,8 @@ namespace Soup::UnitTests
 		// [[InlineData("1.2.3", true, 1, 2, 3)]] // Success
 		// [[InlineData("0.0.0", true, 0, 0, 0)]] // All zeros success
 		// [[InlineData("", false, 0, 0, 0)]] // Empty fails
-		// [[InlineData("1", false, 0, 0, 0)]] // Major only fails
-		// [[InlineData("1.2", false, 0, 0, 0)]] // Major/Minor only fails
+		// [[InlineData("1", true, 1, 0, 0)]] // Major only success
+		// [[InlineData("1.2", true, 1, 2, 0)]] // Major/Minor only success
 		void TryParseValues(std::string value, bool expectedResult, int major, int minor, int patch)
 		{
 			SemanticVersion uut;

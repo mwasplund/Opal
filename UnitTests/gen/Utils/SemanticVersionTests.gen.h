@@ -29,8 +29,8 @@ TestState RunSemanticVersionTests()
 	state += Soup::Test::RunTest(className, "TryParseValues(\"1.2.3\", true, 1, 2, 3)", [&testClass]() { testClass->TryParseValues("1.2.3", true, 1, 2, 3); });
 	state += Soup::Test::RunTest(className, "TryParseValues(\"0.0.0\", true, 0, 0, 0)", [&testClass]() { testClass->TryParseValues("0.0.0", true, 0, 0, 0); });
 	state += Soup::Test::RunTest(className, "TryParseValues(\"\", false, 0, 0, 0)", [&testClass]() { testClass->TryParseValues("", false, 0, 0, 0); });
-	state += Soup::Test::RunTest(className, "TryParseValues(\"1\", false, 0, 0, 0)", [&testClass]() { testClass->TryParseValues("1", false, 0, 0, 0); });
-	state += Soup::Test::RunTest(className, "TryParseValues(\"1.2\", false, 0, 0, 0)", [&testClass]() { testClass->TryParseValues("1.2", false, 0, 0, 0); });
+	state += Soup::Test::RunTest(className, "TryParseValues(\"1\", true, 1, 0, 0)", [&testClass]() { testClass->TryParseValues("1", true, 1, 0, 0); });
+	state += Soup::Test::RunTest(className, "TryParseValues(\"1.2\", true, 1, 2, 0)", [&testClass]() { testClass->TryParseValues("1.2", true, 1, 2, 0); });
 	state += Soup::Test::RunTest(className, "ToStringValues(1, 2, 3, \"1.2.3\")", [&testClass]() { testClass->ToStringValues(1, 2, 3, "1.2.3"); });
 	state += Soup::Test::RunTest(className, "ToStringValues(0, 0, 0, \"0.0.0\")", [&testClass]() { testClass->ToStringValues(0, 0, 0, "0.0.0"); });
 

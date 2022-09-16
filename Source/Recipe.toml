@@ -1,4 +1,0 @@
-Name = "Opal"
-Language = "C++|0.1"
-Version = "0.4.1"
-Interface = "Module.cpp"

@@ -8,7 +8,7 @@
 namespace Opal::System
 {
 	/// <summary>
-	/// A scopped library manager registration helper
+	/// A scoped library manager registration helper
 	/// </summary>
 	export class ScopedLibraryManagerRegister
 	{

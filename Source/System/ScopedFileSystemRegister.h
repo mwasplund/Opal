@@ -8,7 +8,7 @@
 namespace Opal::System
 {
 	/// <summary>
-	/// A scopped file system registration helper
+	/// A scoped file system registration helper
 	/// </summary>
 	export class ScopedFileSystemRegister
 	{

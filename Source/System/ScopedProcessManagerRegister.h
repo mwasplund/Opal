@@ -8,7 +8,7 @@
 namespace Opal::System
 {
 	/// <summary>
-	/// A scopped process manager registration helper
+	/// A scoped process manager registration helper
 	/// </summary>
 	export class ScopedProcessManagerRegister
 	{

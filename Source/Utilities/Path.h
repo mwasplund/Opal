@@ -39,11 +39,10 @@ namespace Opal
 		/// Initializes a new instance of the <see cref="Path"/> class.
 		/// </summary>
 		Path() :
-			_value(),
-			_rootEndLocation(),
-			_fileNameStartLocation()
+			_value("./"),
+			_rootEndLocation(0),
+			_fileNameStartLocation(2)
 		{
-			SetState({ RelativeDirectory }, "", "");
 		}
 
 		/// <summary>
@@ -613,7 +612,7 @@ namespace Opal
 				stringBuilder << fileName;
 			}
 
-			// Store the persistant state
+			// Store the persistent state
 			_value = stringBuilder.str();
 			_rootEndLocation = root.size();
 			_fileNameStartLocation = _value.size() - fileName.size();

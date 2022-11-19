@@ -66,75 +66,18 @@ namespace Opal::System
 		/// <summary>
 		/// Get the last write time of the file/directory
 		/// </summary>
-		std::time_t GetLastWriteTime(const Path& path) override final
+		std::filesystem::file_time_type GetLastWriteTime(const Path& path) override final
 		{
-			// TODO: Remove when C++20 is ready
-			#if defined (_WIN32)
-				struct _stat64 fileInfo;
-				if (_stat64(path.ToString().c_str(), &fileInfo) != 0)
-				{
-					switch (errno)
-					{
-						case ENOENT:
-							throw std::runtime_error("Not Found get last write time: " + path.ToString());
-						case EINVAL:
-							throw std::runtime_error("Invalid parameter get last write time: " + path.ToString());
-						default:
-							throw std::runtime_error("Unexpected error get last write time: " + path.ToString());
-					}
-				}
-				return fileInfo.st_mtime;
-			#elif defined(__linux__)
-				throw std::runtime_error("GetLastWriteTime: Not Implemented");
-			#else
-				auto fileTime = std::filesystem::last_write_time(path.ToString());
-				auto systemTime = std::chrono::file_time::to_sys(fileTime);
-				auto time = std::chrono::system_time::clock::to_time_t(systemTime);
-				return time;
-			#endif
+			auto fileTime = std::filesystem::last_write_time(path.ToString());
+			return fileTime;
 		}
 
 		/// <summary>
 		/// Set the last write time of the file/directory
 		/// </summary>
-		void SetLastWriteTime(const Path& path, std::time_t value) override final
+		void SetLastWriteTime(const Path& path, std::filesystem::file_time_type value) override final
 		{
-			// TODO: Remove when C++20 is ready
-			#if defined (_WIN32)
-				// Open a handle on the file
-				auto fileHandle = CreateFile(
-					path.ToString().c_str(),
-					GENERIC_WRITE,
-					FILE_SHARE_READ,
-					nullptr,
-					OPEN_EXISTING,
-					0,
-					nullptr);
-
-				auto fileTime = TimetToFileTime(value);
-
-				if (!SetFileTime(
-					fileHandle,
-					(LPFILETIME)nullptr,
-					(LPFILETIME)nullptr, 
-					&fileTime))
-				{
-					auto error = GetLastError();
-					throw std::runtime_error("Failed to set file time: " + std::to_string(error));
-				}
-
-				if (!CloseHandle(fileHandle))
-				{
-					auto error = GetLastError();
-					throw std::runtime_error("Failed to close file handle: " + std::to_string(error));
-				}
-			#elif defined(__linux__)
-				throw std::runtime_error("SetLastWriteTime: Not Implemented");
-			#else
-				auto systemTime = std::chrono::system_clock::from_time_t(value);
-				auto fileTime = std::chrono::file_time::from_sys(systemTime);
-				std::filesystem::last_write_time(path.ToString(), fileTime);
-			#endif
+			std::filesystem::last_write_time(path.ToString(), value);
 		}
 
 		/// <summary>

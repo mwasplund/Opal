@@ -10,7 +10,7 @@ namespace Opal::System
 	export class MockFile
 	{
 	public:
-		MockFile(std::stringstream content, std::time_t lastWriteTime) :
+		MockFile(std::stringstream content, std::filesystem::file_time_type lastWriteTime) :
 			Content(std::move(content)),
 			LastWriteTime(lastWriteTime)
 		{
@@ -22,7 +22,7 @@ namespace Opal::System
 		{
 		}
 
-		MockFile(std::time_t lastWriteTime) :
+		MockFile(std::filesystem::file_time_type lastWriteTime) :
 			Content(),
 			LastWriteTime(lastWriteTime)
 		{
@@ -35,7 +35,7 @@ namespace Opal::System
 		}
 
 		std::stringstream Content;
-		std::time_t LastWriteTime;
+		std::filesystem::file_time_type LastWriteTime;
 	};
 	
 	class MockOutputFile : public IOutputFile

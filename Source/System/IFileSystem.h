@@ -66,13 +66,13 @@ namespace Opal::System
 		/// Get the last write time of the file/directory
 		/// TODO: This should be a better representation of datetime...
 		/// </summary>
-		virtual std::time_t GetLastWriteTime(const Path& path) = 0;
+		virtual std::filesystem::file_time_type GetLastWriteTime(const Path& path) = 0;
 
 		/// <summary>
 		/// Set the last write time of the file/directory
 		/// TODO: This should be a better representation of datetime...
 		/// </summary>
-		virtual void SetLastWriteTime(const Path& path, std::time_t value) = 0;
+		virtual void SetLastWriteTime(const Path& path, std::filesystem::file_time_type value) = 0;
 
 		/// <summary>
 		/// Open the requested file as a stream to read

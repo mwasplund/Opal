@@ -21,6 +21,7 @@
 #undef max
 #undef CreateProcess
 #undef GetCurrentTime
+#undef GetCurrentDirectory
 
 #elif defined(__linux__)
 #else

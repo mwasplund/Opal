@@ -95,7 +95,7 @@ namespace Opal::System
 		/// <summary>
 		/// Get the last write time of the file/directory
 		/// </summary>
-		std::filesystem::file_time_type GetLastWriteTime(const Path& path) override final
+		 bool TryGetLastWriteTime(const Path& path, std::filesystem::file_time_type& value) override final
 		{
 			std::stringstream message;
 			message << "GetLastWriteTime: " << path.ToString();
@@ -104,12 +104,12 @@ namespace Opal::System
 			auto file = _files.find(path);
 			if (file != _files.end())
 			{
-				return file->second->LastWriteTime;
+				value = file->second->LastWriteTime;
+				return true;
 			}
 			else
 			{
-				auto errorMessage = "Cannot find file for last write time: " + path.ToString();
-				throw std::runtime_error(errorMessage);
+				return false;
 			}
 		}
 

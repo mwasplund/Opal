@@ -66,10 +66,39 @@ namespace Opal::System
 		/// <summary>
 		/// Get the last write time of the file/directory
 		/// </summary>
-		std::filesystem::file_time_type GetLastWriteTime(const Path& path) override final
+		bool TryGetLastWriteTime(const Path& path, std::filesystem::file_time_type& value) override final
 		{
-			auto fileTime = std::filesystem::last_write_time(path.ToString());
-			return fileTime;
+			#ifdef _WIN32
+				WIN32_FILE_ATTRIBUTE_DATA attrs;
+				if (!GetFileAttributesExA(path.ToString().c_str(), GetFileExInfoStandard, &attrs))
+				{
+					DWORD error = GetLastError();
+					if (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND)
+						return false;
+					else
+						throw std::runtime_error("Unexpected error get last write time: " + path.ToString());
+				}
+				else
+				{
+					auto fileDuration = std::chrono::file_clock::duration(
+						(static_cast<uint64_t>(attrs.ftLastWriteTime.dwHighDateTime) << 32) |
+						static_cast<uint64_t>(attrs.ftLastWriteTime.dwLowDateTime));
+					value = std::filesystem::file_time_type(fileDuration);
+					return true;
+				}
+			#else
+				std::error_code error;
+				auto fileTime = std::filesystem::last_write_time(path.ToString(), error);
+				if (error.value() != 0)
+				{
+					value = fileTime;
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			#endif
 		}
 
 		/// <summary>

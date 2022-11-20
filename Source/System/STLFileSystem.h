@@ -49,7 +49,7 @@ namespace Opal::System
 		/// <summary>
 		/// Gets the current directory for the running processes
 		/// </summary>
-		Path GetCurrentDirectory2() override final
+		Path GetCurrentDirectory() override final
 		{
 			auto current = std::filesystem::current_path();
 			return Path(current.string() + "/");

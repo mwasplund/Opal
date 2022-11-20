@@ -55,7 +55,7 @@ namespace Opal::System
 		/// <summary>
 		/// Gets the current directory for the running processes
 		/// </summary>
-		virtual Path GetCurrentDirectory2() = 0;
+		virtual Path GetCurrentDirectory() = 0;
 
 		/// <summary>
 		/// Gets a value indicating whether the directory/file exists

@@ -16,15 +16,12 @@
 #include <Windows.h>
 #include <shlobj.h>
 #include <psapi.h>
-#ifdef min
+
 #undef min
-#endif
-#ifdef max
 #undef max
-#endif
-#ifdef CreateProcess
 #undef CreateProcess
-#endif
+#undef GetCurrentTime
+
 #elif defined(__linux__)
 #else
 #error Uknown Platform
@@ -51,10 +48,13 @@ export module Opal;
 #include "System/MockFileSystem.h"
 #include "System/MockLibraryManager.h"
 #include "System/MockProcessManager.h"
+#include "System/MockSystem.h"
 #include "System/ScopedFileSystemRegister.h"
 #include "System/ScopedLibraryManagerRegister.h"
 #include "System/ScopedProcessManagerRegister.h"
+#include "System/ScopedSystemRegister.h"
 #include "System/STLFileSystem.h"
+#include "System/STLSystem.h"
 
 #ifdef _WIN32
 #include "System/SmartHandle.h"

@@ -72,7 +72,7 @@ namespace Opal::System
 		/// <summary>
 		/// Gets the current directory for the running processes
 		/// </summary>
-		Path GetCurrentDirectory2() override final
+		Path GetCurrentDirectory() override final
 		{
 			_requests.push_back("GetCurrentDirectory");
 
@@ -98,7 +98,7 @@ namespace Opal::System
 		 bool TryGetLastWriteTime(const Path& path, std::filesystem::file_time_type& value) override final
 		{
 			std::stringstream message;
-			message << "GetLastWriteTime: " << path.ToString();
+			message << "TryGetLastWriteTime: " << path.ToString();
 			_requests.push_back(message.str());
 
 			auto file = _files.find(path);

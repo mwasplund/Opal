@@ -134,9 +134,15 @@ namespace Opal::System
 
 				do
 				{
-					auto fileName = findData.cFileName;
-					if (fileName == std::string_view("..")) {
+					std::string_view fileName = findData.cFileName;
+					if (fileName == std::string_view(".."))
+					{
 						continue;
+					}
+					else if (fileName == std::string_view("."))
+					{
+						// Encode for Path
+						fileName = "./";
 					}
 
 					auto filePath = Path(fileName);

@@ -114,6 +114,18 @@ namespace Opal::System
 		}
 
 		/// <summary>
+		/// Get the last write time of all files in a directory
+		/// </summary>
+		void GetDirectoryFilesLastWriteTime(
+			const Path& path,
+			std::function<void(const Path& file, std::filesystem::file_time_type)> callback) override final
+		{
+			std::stringstream message;
+			message << "GetDirectoryFilesLastWriteTime: " << path.ToString();
+			_requests.push_back(message.str());
+		}
+
+		/// <summary>
 		/// Set the last write time of the file/directory
 		/// </summary>
 		void SetLastWriteTime(const Path& path, std::filesystem::file_time_type /*value*/) override final

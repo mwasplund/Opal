@@ -69,9 +69,15 @@ namespace Opal::System
 
 		/// <summary>
 		/// Set the last write time of the file/directory
-		/// TODO: This should be a better representation of datetime...
 		/// </summary>
 		virtual void SetLastWriteTime(const Path& path, std::filesystem::file_time_type value) = 0;
+
+		/// <summary>
+		/// Get the last write time of all files in a directory
+		/// </summary>
+		virtual void GetDirectoryFilesLastWriteTime(
+			const Path& path,
+			std::function<void(const Path& file, std::filesystem::file_time_type)> callback) = 0;
 
 		/// <summary>
 		/// Open the requested file as a stream to read

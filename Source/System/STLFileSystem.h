@@ -102,6 +102,59 @@ namespace Opal::System
 		}
 
 		/// <summary>
+		/// Get the last write time of all files in a directory
+		/// </summary>
+		void GetDirectoryFilesLastWriteTime(
+			const Path& path,
+			std::function<void(const Path& file, std::filesystem::file_time_type)> callback) override final
+		{
+			if (path.HasFileName())
+				throw std::runtime_error("Path was not a directory");
+
+			#ifdef _WIN32
+				auto searchPath = path.ToString() + "*";
+
+				WIN32_FIND_DATAA findData;
+				HANDLE findHandle = FindFirstFileExA(
+					searchPath.c_str(),
+					FindExInfoBasic,
+					&findData,
+					FindExSearchNameMatch,
+					nullptr,
+					0);
+
+				if (findHandle == INVALID_HANDLE_VALUE)
+				{
+					auto error = GetLastError();
+					if (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND)
+						return;
+					else
+						throw std::runtime_error("FindFirstFileExA Failed");
+				}
+
+				do
+				{
+					auto fileName = findData.cFileName;
+					if (fileName == std::string_view("..")) {
+						continue;
+					}
+
+					auto filePath = Path(fileName);
+					auto lastWriteTimeDuration = std::chrono::file_clock::duration(
+						(static_cast<uint64_t>(findData.ftLastWriteTime.dwHighDateTime) << 32) |
+						static_cast<uint64_t>(findData.ftLastWriteTime.dwLowDateTime));
+					auto lastWriteTime = std::filesystem::file_time_type(lastWriteTimeDuration);
+					callback(filePath, lastWriteTime);
+				} while (FindNextFileA(findHandle, &findData));
+
+				if (!FindClose(findHandle))
+					throw std::runtime_error("Failed to close find handle");
+			#else
+				#error Not Implemented
+			#endif
+		}
+
+		/// <summary>
 		/// Set the last write time of the file/directory
 		/// </summary>
 		void SetLastWriteTime(const Path& path, std::filesystem::file_time_type value) override final

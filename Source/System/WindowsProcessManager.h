@@ -55,12 +55,14 @@ namespace Opal::System
 		std::shared_ptr<IProcess> CreateProcess(
 			const Path& executable,
 			const std::string& arguments,
-			const Path& workingDirectory) override final
+			const Path& workingDirectory,
+			bool interceptInputOutput) override final
 		{
 			return std::make_shared<WindowsProcess>(
 				executable,
 				arguments,
-				workingDirectory);
+				workingDirectory,
+				interceptInputOutput);
 		}
 	};
 }

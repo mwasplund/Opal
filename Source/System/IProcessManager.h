@@ -44,7 +44,8 @@ namespace Opal::System
 		virtual std::shared_ptr<IProcess> CreateProcess(
 			const Path& executable,
 			const std::string& arguments,
-			const Path& workingDirectory) = 0;
+			const Path& workingDirectory,
+			bool interceptInputOutput) = 0;
 
 	private:
 		static std::shared_ptr<IProcessManager> _current;

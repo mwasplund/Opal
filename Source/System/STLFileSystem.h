@@ -156,7 +156,7 @@ namespace Opal::System
 				if (!FindClose(findHandle))
 					throw std::runtime_error("Failed to close find handle");
 			#else
-				#error Not Implemented
+				throw std::runtime_error("Not Implemented");
 			#endif
 		}
 

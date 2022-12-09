@@ -39,8 +39,12 @@ namespace Opal::System
 			message << "GetCurrentTime";
 			_requests.push_back(message.str());
 
+			#ifdef _WIN32
 			return std::chrono::clock_cast<std::chrono::file_clock>(
 				std::chrono::time_point<std::chrono::system_clock>());
+			#else
+			throw std::runtime_error("Not implemented");
+			#endif
 		}
 
 	private:

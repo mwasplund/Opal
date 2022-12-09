@@ -9,11 +9,13 @@
 #include <iostream>
 #include <locale>
 #include <map>
+#include <optional>
 #include <queue>
 #include <sstream>
 #include <string>
 
 #if defined(_WIN32)
+
 #include <Windows.h>
 #include <shlobj.h>
 #include <psapi.h>

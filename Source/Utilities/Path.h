@@ -13,7 +13,10 @@ namespace Opal
 	///  'A-Z:' - Rooted in a letter drive (Windows Specific)
 	///  '//' - Server root
 	/// </summary>
-	export class Path
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class Path
 	{
 	private:
 		static constexpr char DirectorySeparator = '/';

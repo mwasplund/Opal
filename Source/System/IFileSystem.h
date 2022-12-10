@@ -6,11 +6,14 @@
 #include "IInputFile.h"
 #include "IOutputFile.h"
 
+#ifdef SOUP_BUILD
+export
+#endif
 namespace Opal::System
 {
-	export struct DirectoryEntry
+	struct DirectoryEntry
 	{
-		Path Path;
+		::Opal::Path Path;
 		bool IsDirectory;
 		uint64_t Size;
 		std::time_t AccessTime;
@@ -25,7 +28,7 @@ namespace Opal::System
 	/// The file system interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IFileSystem
+	class IFileSystem
 	{
 	public:
 		/// <summary>

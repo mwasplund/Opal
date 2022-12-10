@@ -10,7 +10,10 @@ namespace Opal
 	/// <summary>
 	/// Console logger that wraps the base <see cref="TraceListener"/>
 	/// </summary>
-	export class ConsoleTraceListener : public TraceListener
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class ConsoleTraceListener : public TraceListener
 	{
 	public:
 		/// <summary>

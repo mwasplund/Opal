@@ -11,7 +11,10 @@ namespace Opal::IO
 	/// <summary>
 	/// The system console manager
 	/// </summary>
-	export class SystemConsoleManager : public IConsoleManager
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class SystemConsoleManager : public IConsoleManager
 	{
 	public:
 		/// <summary>

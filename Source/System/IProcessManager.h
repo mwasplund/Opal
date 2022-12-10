@@ -11,7 +11,10 @@ namespace Opal::System
 	/// The process manager interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IProcessManager
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IProcessManager
 	{
 	public:
 		/// <summary>

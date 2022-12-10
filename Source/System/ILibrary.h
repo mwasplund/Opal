@@ -10,7 +10,10 @@ namespace Opal::System
 	/// The library interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class ILibrary
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class ILibrary
 	{
 	public:
 		/// <summary>

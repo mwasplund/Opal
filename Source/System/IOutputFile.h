@@ -11,7 +11,10 @@ namespace Opal::System
 	/// The output file interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IOutputFile : virtual public IFile
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IOutputFile : virtual public IFile
 	{
 	public:
 		/// <summary>

@@ -10,7 +10,10 @@ namespace Opal::System
 	/// The process interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IProcess
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IProcess
 	{
 	public:
 		/// <summary>

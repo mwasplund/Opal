@@ -10,7 +10,10 @@ namespace Opal::IO
 	/// The console input stream interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IConsoleInputStream
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IConsoleInputStream
 	{
 	public:
 		/// <summary>

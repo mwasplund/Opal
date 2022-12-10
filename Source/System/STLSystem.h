@@ -10,7 +10,10 @@ namespace Opal::System
 	/// <summary>
 	/// The standard library system
 	/// </summary>
-	export class STLSystem : public ISystem
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class STLSystem : public ISystem
 	{
 	public:
 		/// <summary>

@@ -9,7 +9,7 @@
 namespace Opal::System
 {
 	/// <summary>
-	/// A windows splatform specific process executable using system
+	/// A windows platform specific process executable using system
 	/// </summary>
 	export class WindowsProcessManager : public IProcessManager
 	{

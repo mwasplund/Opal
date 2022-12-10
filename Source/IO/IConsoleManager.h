@@ -11,7 +11,10 @@ namespace Opal::IO
 	/// The input manager interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IConsoleManager
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IConsoleManager
 	{
 	public:
 		/// <summary>

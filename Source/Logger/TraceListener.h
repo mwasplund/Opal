@@ -4,9 +4,12 @@
 
 #pragma once
 
+#ifdef SOUP_BUILD
+export
+#endif
 namespace Opal
 {
-	export enum class TraceEventFlag : uint32_t
+	enum class TraceEventFlag : uint32_t
 	{
 		// High Priority message.
 		HighPriority = 1 << 0,

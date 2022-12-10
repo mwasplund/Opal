@@ -1,7 +1,9 @@
 # Visual Studio
 .vs/
 *.user
-.vscode/ipch/
+
+# VSCode
+.vscode/
 
 # Build
 out/

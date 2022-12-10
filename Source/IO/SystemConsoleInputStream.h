@@ -10,7 +10,10 @@ namespace Opal::IO
 	/// <summary>
 	/// The system console input stream implementation
 	/// </summary>
-	export class SystemConsoleInputStream : public IConsoleInputStream
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class SystemConsoleInputStream : public IConsoleInputStream
 	{
 	public:
 		/// <summary>

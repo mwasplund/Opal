@@ -10,7 +10,10 @@ namespace Opal
 	/// <summary>
 	/// The static logger class
 	/// </summary>
-	export class Log
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class Log
 	{
 	public:
 		/// <summary>

@@ -7,7 +7,10 @@
 
 namespace Opal
 {
-	export class EventTypeFilter : public IEventFilter
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class EventTypeFilter : public IEventFilter
 	{
 	public:
 		EventTypeFilter(TraceEventFlag eventTypes) :

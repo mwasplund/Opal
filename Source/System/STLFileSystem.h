@@ -12,7 +12,10 @@ namespace Opal::System
 	/// <summary>
 	/// The standard library file system
 	/// </summary>
-	export class STLFileSystem : public IFileSystem
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class STLFileSystem : public IFileSystem
 	{
 	public:
 		/// <summary>

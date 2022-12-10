@@ -10,7 +10,10 @@ namespace Opal::System
 	/// The file interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IFile
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IFile
 	{
 	public:
 		/// <summary>

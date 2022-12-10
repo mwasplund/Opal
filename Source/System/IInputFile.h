@@ -11,7 +11,10 @@ namespace Opal::System
 	/// The input file interface
 	/// Interface mainly used to allow for unit testing client code
 	/// </summary>
-	export class IInputFile : virtual public IFile
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IInputFile : virtual public IFile
 	{
 	public:
 		/// <summary>

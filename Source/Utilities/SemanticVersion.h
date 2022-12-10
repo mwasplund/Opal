@@ -8,7 +8,10 @@ namespace Opal
 	/// <summary>
 	/// The semantic version class
 	/// </summary>
-	export class SemanticVersion
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class SemanticVersion
 	{
 	public:
 		/// <summary>

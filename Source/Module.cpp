@@ -38,6 +38,8 @@ module;
 export module Opal;
 #endif
 
+#define OPAL_IMPLEMENTATION
+
 #include "Utilities/Path.h"
 #include "Utilities/SemanticVersion.h"
 
@@ -73,8 +75,10 @@ export module Opal;
 #include "System/STLFileSystem.h"
 #include "System/STLSystem.h"
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #include "System/SmartHandle.h"
 #include "System/WindowsDynamicLibraryManager.h"
 #include "System/WindowsProcessManager.h"
+#elif defined(__linux__)
+#include "System/LinuxProcessManager.h"
 #endif

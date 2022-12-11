@@ -113,6 +113,8 @@ namespace Opal
 		static std::shared_ptr<TraceListener> s_listener;
 	};
 
+#ifdef OPAL_IMPLEMENTATION
 	int Log::s_activeId = 0;
 	std::shared_ptr<TraceListener> Log::s_listener = nullptr;
+#endif
 }

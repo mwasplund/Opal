@@ -1,4 +1,4 @@
 Name: "Opal"
 Language: "C++|0.4"
-Version: "0.8.1"
+Version: "0.8.2"
 Interface: "Module.cpp"

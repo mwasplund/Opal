@@ -45,5 +45,7 @@ namespace Opal::IO
 		static std::shared_ptr<IConsoleManager> _current;
 	};
 
+#ifdef OPAL_IMPLEMENTATION
 	std::shared_ptr<IConsoleManager> IConsoleManager::_current = nullptr;
+#endif
 }

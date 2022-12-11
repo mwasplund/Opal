@@ -46,5 +46,7 @@ namespace Opal::System
 		static std::shared_ptr<ILibraryManager> _current;
 	};
 
+#ifdef OPAL_IMPLEMENTATION
 	std::shared_ptr<ILibraryManager> ILibraryManager::_current = nullptr;
+#endif
 }

@@ -10,7 +10,10 @@ namespace Opal::System
 	/// <summary>
 	/// A mock process executable using system
 	/// </summary>
-	export class MockProcess : public IProcess
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class MockProcess : public IProcess
 	{
 	public:
 		/// <summary>

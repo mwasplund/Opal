@@ -121,5 +121,7 @@ namespace Opal::System
 		static std::shared_ptr<IFileSystem> _current;
 	};
 
+#ifdef OPAL_IMPLEMENTATION
 	std::shared_ptr<IFileSystem> IFileSystem::_current = nullptr;
+#endif
 }

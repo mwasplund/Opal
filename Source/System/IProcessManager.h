@@ -54,5 +54,7 @@ namespace Opal::System
 		static std::shared_ptr<IProcessManager> _current;
 	};
 
+#ifdef OPAL_IMPLEMENTATION
 	std::shared_ptr<IProcessManager> IProcessManager::_current = nullptr;
+#endif
 }

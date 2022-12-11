@@ -44,5 +44,7 @@ namespace Opal::System
 		static std::shared_ptr<ISystem> _current;
 	};
 
+#ifdef OPAL_IMPLEMENTATION
 	std::shared_ptr<ISystem> ISystem::_current = nullptr;
+#endif
 }

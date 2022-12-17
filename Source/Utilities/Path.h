@@ -43,7 +43,7 @@ namespace Opal
 		/// </summary>
 		Path() :
 			_value("./"),
-			_rootEndLocation(0),
+			_rootEndLocation(-1),
 			_fileNameStartLocation(2)
 		{
 		}
@@ -72,7 +72,7 @@ namespace Opal
 		/// </summary>
 		bool HasRoot() const
 		{
-			return _rootEndLocation > 0;
+			return _rootEndLocation >= 0;
 		}
 
 		/// <summary>
@@ -80,6 +80,9 @@ namespace Opal
 		/// </summary>
 		std::string_view GetRoot() const
 		{
+			if (!HasRoot())
+				throw std::runtime_error("Cannot access root on path that has none");
+
 			return std::string_view(_value.data(), _rootEndLocation);
 		}
 
@@ -212,9 +215,12 @@ namespace Opal
 		void SetFilename(std::string_view value)
 		{
 			// Build the new final string
+			std::optional<std::string_view> root;
+			if (HasRoot())
+				root = GetRoot();
 			SetState(
 				DecomposeDirectoriesString(GetDirectories()),
-				GetRoot(),
+				root,
 				value);
 		}
 
@@ -288,7 +294,7 @@ namespace Opal
 			auto result = Path();
 			result.SetState(
 				resultDirectories,
-				"",
+				std::nullopt,
 				GetFileName());
 
 			return result;
@@ -343,9 +349,12 @@ namespace Opal
 
 			// Set the state with the root from the LHS and the filename from the RHS
 			auto result = Path();
+			std::optional<std::string_view> root;
+			if (HasRoot())
+				root = GetRoot();
 			result.SetState(
 				resultDirectories,
-				GetRoot(),
+				root,
 				rhs.GetFileName());
 
 			return result;
@@ -378,7 +387,7 @@ namespace Opal
 			auto firstSeparator = _value.find_first_of(DirectorySeparator);
 			if (firstSeparator != std::string::npos && IsRoot(std::string_view(_value.c_str(), firstSeparator)))
 			{
-				_rootEndLocation = firstSeparator;
+				_rootEndLocation = (int)firstSeparator;
 			}
 
 			auto lastSeparator = _value.find_last_of(DirectorySeparator);
@@ -396,8 +405,8 @@ namespace Opal
 		{
 			// Break out the individual components of the path
 			std::vector<std::string_view> directories;
-			std::string_view root;
-			std::string_view fileName;
+			std::optional<std::string_view> root;
+			std::optional<std::string_view> fileName;
 			DecomposeRawPathString(
 				value,
 				directories,
@@ -405,7 +414,7 @@ namespace Opal
 				fileName);
 
 			// Normalize any unnecessary directories in the raw path
-			bool hasRoot = !root.empty();
+			bool hasRoot = root.has_value();
 			NormalizeDirectories(directories, hasRoot);
 
 			// Rebuild the string value
@@ -418,8 +427,8 @@ namespace Opal
 		void DecomposeRawPathString(
 			std::string_view value,
 			std::vector<std::string_view>& directories,
-			std::string_view& root,
-			std::string_view& fileName)
+			std::optional<std::string_view>& root,
+			std::optional<std::string_view>& fileName)
 		{
 			size_t current = 0;
 			size_t next = 0;
@@ -527,9 +536,14 @@ namespace Opal
 
 		bool IsRoot(std::string_view value)
 		{
-			// Check for drive letter
-			if (value.size() == 2)
+			if (value.size() == 0)
 			{
+				// Empty value is root
+				return true;
+			}
+			else if (value.size() == 2)
+			{
+				// Check for drive letter
 				if (std::isalpha(value[0]) && value[1] == LetterDriveSpecifier)
 				{
 					return true;
@@ -595,14 +609,14 @@ namespace Opal
 		/// </summary>
 		void SetState(
 			const std::vector<std::string_view>& directories,
-			std::string_view root,
-			std::string_view fileName)
+			std::optional<std::string_view> root,
+			std::optional<std::string_view> fileName)
 		{
 			std::stringstream stringBuilder;
 
-			if (!root.empty())
+			if (root.has_value())
 			{
-				stringBuilder << root << DirectorySeparator;
+				stringBuilder << root.value() << DirectorySeparator;
 			}
 
 			for (size_t i = 0; i < directories.size(); i++)
@@ -610,27 +624,44 @@ namespace Opal
 				stringBuilder << directories[i] << DirectorySeparator;
 			}
 
-			if (!fileName.empty())
+			if (fileName.has_value())
 			{
-				stringBuilder << fileName;
+				stringBuilder << fileName.value();
 			}
 
 			// Store the persistent state
 			_value = stringBuilder.str();
-			_rootEndLocation = root.size();
-			_fileNameStartLocation = _value.size() - fileName.size();
+
+			if (root.has_value())
+				_rootEndLocation = (int)root.value().size();
+			else
+				_rootEndLocation = -1;
+
+			if (fileName.has_value())
+				_fileNameStartLocation = _value.size() - fileName.value().size();
+			else
+				_fileNameStartLocation = _value.size();
 		}
 
 		const std::string_view GetDirectories() const
 		{
-			return std::string_view(
-				_value.data() + _rootEndLocation,
-				_fileNameStartLocation - _rootEndLocation);
+			if (_rootEndLocation >= 0)
+			{
+				return std::string_view(
+					_value.data() + _rootEndLocation,
+					_fileNameStartLocation - _rootEndLocation);
+			}
+			else
+			{
+				return std::string_view(
+					_value.data(),
+					_fileNameStartLocation);
+			}
 		}
 
 	private:
 		std::string _value;
-		size_t _rootEndLocation;
+		int _rootEndLocation;
 		size_t _fileNameStartLocation;
 	};
 }

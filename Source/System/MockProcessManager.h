@@ -71,13 +71,15 @@ namespace Opal::System
 		/// </summary>
 		std::shared_ptr<IProcess> CreateProcess(
 			const Path& executable,
-			const std::string& arguments,
+			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			bool interceptInputOutput) override final
 		{
 			std::stringstream message;
 			auto id = m_uniqueId++;
-			message << "CreateProcess: " << id << " " << interceptInputOutput << " [" << workingDirectory.ToString() << "] " << executable.ToString() << " " << arguments;
+			message << "CreateProcess: " << id << " " << interceptInputOutput << " [" << workingDirectory.ToString() << "] " << executable.ToString();
+			for (auto& argument : arguments)
+				message << " " << argument;
 
 			_requests.push_back(message.str());
 

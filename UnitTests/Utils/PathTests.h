@@ -14,7 +14,6 @@ namespace Soup::UnitTests
 		{
 			auto uut = Path::Load("./");
 			Assert::IsFalse(uut.HasRoot(), "Verify is no root.");
-			Assert::AreEqual("", uut.GetRoot(), "Verify root matches.");
 			Assert::IsFalse(uut.HasFileName(), "Verify has no filename.");
 			Assert::AreEqual("", uut.GetFileName(), "Verify file name matches.");
 			Assert::IsFalse(uut.HasFileStem(), "Verify has no file stem.");
@@ -42,6 +41,22 @@ namespace Soup::UnitTests
 		}
 
 		// [[Fact]]
+		void Load_LinuxRoot()
+		{
+			auto uut = Path::Load("/");
+			Assert::IsTrue(uut.HasRoot(), "Verify has root.");
+			Assert::AreEqual("", uut.GetRoot(), "Verify root matches.");
+			Assert::IsFalse(uut.HasFileName(), "Verify has no filename.");
+			Assert::AreEqual("", uut.GetFileName(), "Verify file name matches.");
+			Assert::IsFalse(uut.HasFileStem(), "Verify has no file stem.");
+			Assert::AreEqual("", uut.GetFileStem(), "Verify file stem matches.");
+			Assert::IsFalse(uut.HasFileExtension(), "Verify has no file extension.");
+			Assert::AreEqual("", uut.GetFileExtension(), "Verify file extension matches.");
+			Assert::AreEqual("/", uut.ToString(), "Verify string value matches.");
+			Assert::AreEqual("\\", uut.ToAlternateString(), "Verify alternate string value matches.");
+		}
+
+		// [[Fact]]
 		void Load_AbsoluteFile()
 		{
 			auto uut = Path::Load("C:/myfolder/anotherfolder/file.txt");
@@ -61,7 +76,6 @@ namespace Soup::UnitTests
 		{
 			auto uut = Path();
 			Assert::IsFalse(uut.HasRoot(), "Verify is no root.");
-			Assert::AreEqual("", uut.GetRoot(), "Verify root matches.");
 			Assert::IsFalse(uut.HasFileName(), "Verify has no filename.");
 			Assert::AreEqual("", uut.GetFileName(), "Verify file name matches.");
 			Assert::IsFalse(uut.HasFileStem(), "Verify has no file stem.");
@@ -77,7 +91,6 @@ namespace Soup::UnitTests
 		{
 			auto uut = Path("");
 			Assert::IsFalse(uut.HasRoot(), "Verify is no root.");
-			Assert::AreEqual("", uut.GetRoot(), "Verify root matches.");
 			Assert::IsFalse(uut.HasFileName(), "Verify has filename.");
 			Assert::AreEqual("", uut.GetFileName(), "Verify file name matches.");
 			Assert::IsFalse(uut.HasFileStem(), "Verify has file stem.");
@@ -93,7 +106,6 @@ namespace Soup::UnitTests
 		{
 			auto uut = Path("./");
 			Assert::IsFalse(uut.HasRoot(), "Verify is no root.");
-			Assert::AreEqual("", uut.GetRoot(), "Verify root matches.");
 			Assert::IsFalse(uut.HasFileName(), "Verify has filename.");
 			Assert::AreEqual("", uut.GetFileName(), "Verify file name matches.");
 			Assert::IsFalse(uut.HasFileStem(), "Verify has file stem.");
@@ -109,7 +121,6 @@ namespace Soup::UnitTests
 		{
 			auto uut = Path("../");
 			Assert::IsFalse(uut.HasRoot(), "Verify is no root.");
-			Assert::AreEqual("", uut.GetRoot(), "Verify root matches.");
 			Assert::IsFalse(uut.HasFileName(), "Verify has filename.");
 			Assert::AreEqual("", uut.GetFileName(), "Verify file name matches.");
 			Assert::IsFalse(uut.HasFileStem(), "Verify has file stem.");
@@ -125,7 +136,6 @@ namespace Soup::UnitTests
 		{
 			auto uut = Path("myfolder/anotherfolder/file.txt");
 			Assert::IsFalse(uut.HasRoot(), "Verify is no root.");
-			Assert::AreEqual("", uut.GetRoot(), "Verify root matches.");
 			Assert::IsTrue(uut.HasFileName(), "Verify has filename.");
 			Assert::AreEqual("file.txt", uut.GetFileName(), "Verify file name matches.");
 			Assert::IsTrue(uut.HasFileStem(), "Verify has file stem.");

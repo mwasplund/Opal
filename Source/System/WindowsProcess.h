@@ -15,7 +15,7 @@ namespace Opal::System
 	private:
 		// Input
 		Path m_executable;
-		std::string m_arguments;
+		std::vector<std::string> m_arguments;
 		Path m_workingDirectory;
 		bool m_interceptInputOutput;
 
@@ -41,11 +41,11 @@ namespace Opal::System
 		/// </summary>
 		WindowsProcess(
 			const Path& executable,
-			const std::string& arguments,
+			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			bool interceptInputOutput) :
 			m_executable(executable),
-			m_arguments(arguments),
+			m_arguments(std::move(arguments)),
 			m_workingDirectory(workingDirectory),
 			m_interceptInputOutput(interceptInputOutput),
 			m_threadHandle(),
@@ -69,7 +69,9 @@ namespace Opal::System
 		void Start() override final
 		{
 			std::stringstream argumentsValue;
-			argumentsValue << "\"" << m_executable.ToAlternateString() << "\"" << " " << m_arguments;
+			argumentsValue << "\"" << m_executable.ToAlternateString() << "\"";
+			for (auto& argument : m_arguments)
+				argumentsValue << " " << argument;
 			std::string argumentsString = argumentsValue.str();
 
 			STARTUPINFOA startupInfo = {};

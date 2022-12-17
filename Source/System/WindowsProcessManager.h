@@ -46,7 +46,7 @@ namespace Opal::System
 				throw std::runtime_error("Ran out of room in the buffer");
 			}
 
-			return Path(std::string(buffer.data(), buffer.size()));
+			return Path(std::string(buffer.data(), sizeRead));
 		}
 
 		/// <summary>
@@ -54,13 +54,13 @@ namespace Opal::System
 		/// </summary>
 		std::shared_ptr<IProcess> CreateProcess(
 			const Path& executable,
-			const std::string& arguments,
+			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			bool interceptInputOutput) override final
 		{
 			return std::make_shared<WindowsProcess>(
 				executable,
-				arguments,
+				std::move(arguments),
 				workingDirectory,
 				interceptInputOutput);
 		}

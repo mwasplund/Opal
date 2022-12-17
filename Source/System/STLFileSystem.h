@@ -43,7 +43,7 @@ namespace Opal::System
 
 				return Path(userProfile);
 			#elif defined(__linux__)
-				throw std::runtime_error("GetUserProfileDirectory: Not Implemented");
+				return Path(std::getenv("HOME"));
 			#else
 				#error Unknown Platform
 			#endif

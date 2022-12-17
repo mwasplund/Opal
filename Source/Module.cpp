@@ -30,6 +30,10 @@ module;
 #undef GetCurrentDirectory
 
 #elif defined(__linux__)
+
+#include <spawn.h>
+#include <sys/wait.h>
+
 #else
 #error Uknown Platform
 #endif

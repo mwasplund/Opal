@@ -4,6 +4,7 @@
 
 #pragma once
 #include "IProcessManager.h"
+#include "LinuxProcess.h"
 
 namespace Opal::System
 {
@@ -28,7 +29,17 @@ namespace Opal::System
 		/// </summary>
 		Path GetCurrentProcessFileName() override final
 		{
-			throw std::runtime_error("Not implemented");
+			auto buffer = std::array<char, 1024>();
+
+			// Return written bytes, indicating if memory was sufficient
+			int length = readlink("/proc/self/exe", buffer.data(), buffer.size());
+
+			if (length <= 0 || length == buffer.size())
+			{
+				throw std::runtime_error("readlink /proc/self/exe failed");
+			}
+
+			return Path(std::string(buffer.data(), length));
 		}
 
 		/// <summary>
@@ -36,11 +47,15 @@ namespace Opal::System
 		/// </summary>
 		std::shared_ptr<IProcess> CreateProcess(
 			const Path& executable,
-			const std::string& arguments,
+			std::vector<std::string> arguments,
 			const Path& workingDirectory,
 			bool interceptInputOutput) override final
 		{
-			throw std::runtime_error("Not implemented");
+			return std::make_shared<LinuxProcess>(
+				executable,
+				std::move(arguments),
+				workingDirectory,
+				interceptInputOutput);
 		}
 	};
 }

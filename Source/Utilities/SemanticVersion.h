@@ -209,7 +209,8 @@ namespace Opal
 				}
 			}
 
-			return stringBuilder.str();
+			auto value = std::string(std::move(stringBuilder).str());
+			return value;
 		}
 
 	private:

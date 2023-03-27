@@ -66,6 +66,13 @@ namespace Opal::System
 				arguments.push_back(argument.c_str());
 			arguments.push_back(nullptr);
 
+			// Set current working directory that will be inherited by the child process
+			auto currentWorkingDirectory = std::filesystem::current_path();
+			if (chdir(m_workingDirectory.ToString().c_str()) == -1)
+			{
+				throw std::runtime_error("Failed to set working directory");
+			}
+
 			// Start the process
 			pid_t processId;
 			auto status = posix_spawn(
@@ -75,6 +82,13 @@ namespace Opal::System
 				attributes,
 				const_cast<char**>(arguments.data()),
 				environ);
+
+			// Reset working directory
+			if (chdir(currentWorkingDirectory.string().c_str()) == -1)
+			{
+				throw std::runtime_error("Failed to reset working directory");
+			}
+
 			if (status != 0)
 			{
 				throw std::runtime_error("Execute posix_spawn Failed: " + std::to_string(status));

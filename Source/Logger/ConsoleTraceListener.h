@@ -8,6 +8,9 @@
 namespace Opal
 {
 	// MSVC Bug https://developercommunity.visualstudio.com/t/Modules-ICE-when-using-cout-inside-of-/10299789
+	#ifndef SOUP_BUILD
+	inline
+	#endif
 	void DoWriteLine(const std::string& message)
 	{
 		std::cout << message << std::endl;

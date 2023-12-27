@@ -289,18 +289,5 @@ namespace Opal::System
 				std::filesystem::remove(path.ToString());
 			}
 		}
-
-	private:
-		#if defined (_WIN32)
-			FILETIME TimetToFileTime(std::time_t time)
-			{
-				LONGLONG ll = Int32x32To64(time, 10000000) + 116444736000000000;
-				FILETIME result;
-				result.dwLowDateTime = (DWORD) ll;
-				result.dwHighDateTime = ll >>32;
-
-				return result;
-			}
-		#endif
 	};
 }

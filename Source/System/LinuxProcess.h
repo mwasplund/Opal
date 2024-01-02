@@ -5,9 +5,6 @@
 #pragma once
 #include "IProcess.h"
 
-// The existing environment for this process
-extern char **environ;
-
 namespace Opal::System
 {
 	/// <summary>

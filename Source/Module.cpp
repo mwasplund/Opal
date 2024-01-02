@@ -34,6 +34,9 @@ module;
 #include <spawn.h>
 #include <sys/wait.h>
 
+// The existing environment for this process
+extern char **environ;
+
 #else
 #error Uknown Platform
 #endif

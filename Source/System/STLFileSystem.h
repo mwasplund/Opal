@@ -92,14 +92,14 @@ namespace Opal::System
 			#else
 				std::error_code error;
 				auto fileTime = std::filesystem::last_write_time(path.ToString(), error);
-				if (error.value() != 0)
+				if (error)
 				{
-					value = fileTime;
-					return true;
+					return false;
 				}
 				else
 				{
-					return false;
+					value = fileTime;
+					return true;
 				}
 			#endif
 		}

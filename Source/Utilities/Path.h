@@ -300,6 +300,11 @@ namespace Opal
 			return result;
 		}
 
+		std::vector<std::string_view> DecomposeDirectories() const
+		{
+			return DecomposeDirectoriesString(GetDirectories());
+		}
+
 		/// <summary>
 		/// Equality operator
 		/// </summary>

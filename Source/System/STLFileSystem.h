@@ -109,7 +109,7 @@ namespace Opal::System
 		/// </summary>
 		void GetDirectoryFilesLastWriteTime(
 			const Path& path,
-			std::function<void(const Path& file, std::filesystem::file_time_type)> callback) override final
+			std::function<void(const Path& file, std::filesystem::file_time_type)>& callback) override final
 		{
 			if (path.HasFileName())
 				throw std::runtime_error("Path was not a directory");
@@ -138,17 +138,24 @@ namespace Opal::System
 				do
 				{
 					std::string_view fileName = findData.cFileName;
-					if (fileName == std::string_view(".."))
-					{
-						continue;
+					auto filePath = Path();
+					if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+	 				{
+						if (fileName == std::string_view(".."))
+						{
+							continue;
+						}
+						else
+						{
+							// Encode for Path
+							filePath = Path(std::string(fileName) + "/");
+						}
 					}
-					else if (fileName == std::string_view("."))
+					else
 					{
-						// Encode for Path
-						fileName = "./";
+						filePath = Path(fileName);
 					}
 
-					auto filePath = Path(fileName);
 					auto lastWriteTimeDuration = std::chrono::file_clock::duration(
 						(static_cast<uint64_t>(findData.ftLastWriteTime.dwHighDateTime) << 32) |
 						static_cast<uint64_t>(findData.ftLastWriteTime.dwLowDateTime));

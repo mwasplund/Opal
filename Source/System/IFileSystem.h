@@ -80,7 +80,7 @@ namespace Opal::System
 		/// </summary>
 		virtual void GetDirectoryFilesLastWriteTime(
 			const Path& path,
-			std::function<void(const Path& file, std::filesystem::file_time_type)> callback) = 0;
+			std::function<void(const Path& file, std::filesystem::file_time_type)>& callback) = 0;
 
 		/// <summary>
 		/// Open the requested file as a stream to read

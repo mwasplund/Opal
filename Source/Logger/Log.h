@@ -50,6 +50,10 @@ namespace Opal
 		/// <summary>
 		/// Log a high priority message
 		/// </summary>
+		static void HighPriority(std::string_view message)
+		{
+			EnsureListener().TraceEvent(TraceEventFlag::HighPriority, s_activeId, message);
+		}
 		template<typename... Args>
 		static void HighPriority(std::string_view message, Args&&... args)
 		{
@@ -59,6 +63,10 @@ namespace Opal
 		/// <summary>
 		/// Log a generic informational message
 		/// </summary>
+		static void Info(std::string_view message)
+		{
+			EnsureListener().TraceEvent(TraceEventFlag::Information, s_activeId, message);
+		}
 		template<typename... Args>
 		static void Info(std::string_view message, Args&&... args)
 		{
@@ -68,6 +76,10 @@ namespace Opal
 		/// <summary>
 		/// Log a diagnostic message
 		/// </summary>
+		static void Diag(std::string_view message)
+		{
+			EnsureListener().TraceEvent(TraceEventFlag::Diagnostic, s_activeId, message);
+		}
 		template<typename... Args>
 		static void Diag(std::string_view message, Args&&... args)
 		{
@@ -77,6 +89,10 @@ namespace Opal
 		/// <summary>
 		/// Log a warning message
 		/// </summary>
+		static void Warning(std::string_view message)
+		{
+			EnsureListener().TraceEvent(TraceEventFlag::Warning, s_activeId, message);
+		}
 		template<typename... Args>
 		static void Warning(std::string_view message, Args&&... args)
 		{
@@ -86,6 +102,10 @@ namespace Opal
 		/// <summary>
 		/// Log an error message
 		/// </summary>
+		static void Error(std::string_view message)
+		{
+			EnsureListener().TraceEvent(TraceEventFlag::Error, s_activeId, message);
+		}
 		template<typename... Args>
 		static void Error(std::string_view message, Args&&... args)
 		{

@@ -98,6 +98,28 @@ namespace Opal
 		/// <summary>
 		/// All other TraceEvent methods come through this one.
 		/// </summary>
+		void TraceEvent(
+			TraceEventFlag eventType,
+			int id,
+			std::string_view message)
+		{
+			if (HasFilter() && ! _filter->ShouldTrace(eventType))
+			{
+				return;
+			}
+
+			// Build up the resulting message with required header/footer
+			auto builder = std::stringstream();
+			WriteHeader(builder, eventType, id);
+			builder << message;
+
+			bool isEmpty = builder.rdbuf()->in_avail() == 0;
+			if (isEmpty)
+				WriteLine("");
+			else
+				WriteLine(builder.str());
+		}
+
 		template<typename... Args>
 		void TraceEvent(
 			TraceEventFlag eventType,

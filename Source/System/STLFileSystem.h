@@ -107,7 +107,7 @@ namespace Opal::System
 		/// <summary>
 		/// Get the last write time of all files in a directory
 		/// </summary>
-		void GetDirectoryFilesLastWriteTime(
+		bool TryGetDirectoryFilesLastWriteTime(
 			const Path& path,
 			std::function<void(const Path& file, std::filesystem::file_time_type)>& callback) override final
 		{
@@ -130,7 +130,7 @@ namespace Opal::System
 				{
 					auto error = GetLastError();
 					if (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND)
-						return;
+						return false;
 					else
 						throw std::runtime_error("FindFirstFileExA Failed");
 				}
@@ -165,6 +165,8 @@ namespace Opal::System
 
 				if (!FindClose(findHandle))
 					throw std::runtime_error("Failed to close find handle");
+
+				return true;
 			#else
 				throw std::runtime_error("Not Implemented");
 			#endif
@@ -181,6 +183,27 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
+		bool TryOpenRead(const Path& path, bool isBinary, std::shared_ptr<IInputFile>& result) override final
+		{
+			std::ios_base::openmode mode = std::fstream::in;
+			if (isBinary)
+			{
+				mode = static_cast<std::ios_base::openmode>(mode | std::fstream::binary);
+			}
+
+			auto file = std::ifstream(path.ToString(), mode);
+			if (file.fail())
+			{
+				result = nullptr;
+				return false;
+			}
+			else
+			{
+				result = std::make_shared<STLInputFile>(std::move(file));
+				return true;
+			}
+		}
+
 		std::shared_ptr<IInputFile> OpenRead(const Path& path, bool isBinary) override final
 		{
 			std::ios_base::openmode mode = std::fstream::in;
@@ -233,7 +256,7 @@ namespace Opal::System
 		/// <summary>
 		/// Copy the source file to the destination
 		/// </summary>
-		void CopyFile2(const Path& source, const Path& destination) override final
+		void CopyFile(const Path& source, const Path& destination) override final
 		{
 			std::filesystem::copy(
 				source.ToString(),
@@ -244,7 +267,7 @@ namespace Opal::System
 		/// <summary>
 		/// Create the directory at the requested path
 		/// </summary>
-		void CreateDirectory2(const Path& path) override final
+		void CreateDirectory(const Path& path) override final
 		{
 			std::filesystem::create_directories(path.ToString());
 		}

@@ -78,13 +78,14 @@ namespace Opal::System
 		/// <summary>
 		/// Get the last write time of all files in a directory
 		/// </summary>
-		virtual void GetDirectoryFilesLastWriteTime(
+		virtual bool TryGetDirectoryFilesLastWriteTime(
 			const Path& path,
 			std::function<void(const Path& file, std::filesystem::file_time_type)>& callback) = 0;
 
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
+		virtual bool TryOpenRead(const Path& path, bool isBinary, std::shared_ptr<IInputFile>& result) = 0;
 		virtual std::shared_ptr<IInputFile> OpenRead(const Path& path, bool isBinary) = 0;
 
 		/// <summary>
@@ -100,12 +101,12 @@ namespace Opal::System
 		/// <summary>
 		/// Copy the source file to the destination
 		/// </summary>
-		virtual void CopyFile2(const Path& source, const Path& destination) = 0;
+		virtual void CopyFile(const Path& source, const Path& destination) = 0;
 
 		/// <summary>
 		/// Create the directory at the requested path
 		/// </summary>
-		virtual void CreateDirectory2(const Path& path) = 0;
+		virtual void CreateDirectory(const Path& path) = 0;
 
 		/// <summary>
 		/// Get the children of a directory

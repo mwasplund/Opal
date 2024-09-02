@@ -25,6 +25,7 @@ module;
 
 #undef min
 #undef max
+#undef CreateDirectory
 #undef CreateProcess
 #undef GetCurrentTime
 #undef GetCurrentDirectory

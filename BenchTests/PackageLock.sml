@@ -3,8 +3,7 @@ Closures: {
 	Root: {
 		'C++': {
 			Opal: { Version: '../Source/', Build: 'Build0', Tool: 'Tool0' }
-			'Opal.UnitTests': { Version: './', Build: 'Build0', Tool: 'Tool0' }
-			'mwasplund|Soup.Test.Assert': { Version: '0.4.1', Build: 'Build0', Tool: 'Tool0' }
+			'Opal.BenchTests': { Version: './', Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {

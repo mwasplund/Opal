@@ -31,17 +31,21 @@ namespace Opal::System
 		Path GetUserProfileDirectory() override final
 		{
 			#ifdef _WIN32
-				char userProfile[MAX_PATH];
+				auto buffer = std::array<char, MAX_PATH + 2>();
 				HRESULT result = SHGetFolderPath(
 					nullptr,
 					CSIDL_PROFILE,
 					nullptr,
 					SHGFP_TYPE_CURRENT,
-					userProfile);
+					buffer.data());
 				if (result != S_OK)
 					throw std::runtime_error("SHGetFolderPath failed.");
 
-				return Path(userProfile);
+				// Ensure the directory ends with a separator
+				auto userProfileLength = strlen(buffer.data());
+				buffer[userProfileLength] = '\\';
+				buffer[userProfileLength + 1] = '\0';
+				return Path::CreateWindows(std::string(buffer.data(), userProfileLength + 1));
 			#elif defined(__linux__)
 				return Path(std::getenv("HOME"));
 			#else
@@ -55,7 +59,7 @@ namespace Opal::System
 		Path GetCurrentDirectory() override final
 		{
 			auto current = std::filesystem::current_path();
-			return Path(current.string() + "/");
+			return Path::CreateWindows(std::format("{}/", current.string()));
 		}
 
 		/// <summary>
@@ -145,15 +149,19 @@ namespace Opal::System
 						{
 							continue;
 						}
+						else if (fileName == std::string_view("."))
+						{
+							continue;
+						}
 						else
 						{
 							// Encode for Path
-							filePath = Path(std::string(fileName) + "/");
+							filePath = Path(std::format("./{}/", fileName));
 						}
 					}
 					else
 					{
-						filePath = Path(fileName);
+						filePath = Path(std::format("./{}", fileName));
 					}
 
 					auto lastWriteTimeDuration = std::chrono::file_clock::duration(

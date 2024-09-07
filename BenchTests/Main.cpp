@@ -38,7 +38,7 @@ int main()
 	}
 
 	{
-		ankerl::nanobench::Bench().minEpochIterations(10000).run("Initialize Path Relative", [&]
+		ankerl::nanobench::Bench().minEpochIterations(100000).run("Initialize Path Relative", [&]
 		{
 			auto e = Path("./Path1/Path2/");
 			ankerl::nanobench::doNotOptimizeAway(e);

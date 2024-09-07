@@ -30,7 +30,7 @@ int main()
 	}
 
 	{
-		ankerl::nanobench::Bench().minEpochIterations(10000).run("Initialize Path With Root", [&]
+		ankerl::nanobench::Bench().minEpochIterations(100000).run("Initialize Path With Root", [&]
 		{
 			auto e = Path("C:/Path1/Path2/");
 			ankerl::nanobench::doNotOptimizeAway(e);

@@ -377,8 +377,9 @@ namespace Opal
 			if (!rhs._value.starts_with(".."))
 			{
 				// Simple relative directory can use fast string concatenation
-				auto rhsStartValue = std::string_view(rhs._value.c_str() + 2, rhs._value.size() - 2);
-				auto result = Path(std::format("{}{}", _value, rhsStartValue));
+				auto combineValue = std::string(_value);
+				combineValue.append(rhs._value, 2);
+				auto result = Path(std::move(combineValue));
 				return result;
 			}
 			else

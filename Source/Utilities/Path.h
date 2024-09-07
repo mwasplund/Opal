@@ -37,6 +37,11 @@ namespace Opal
 			return result;
 		}
 
+		static Path CreateWindows(const char* value)
+		{
+			return CreateWindows(std::string(value));
+		}
+
 		static Path CreateWindows(std::string_view value)
 		{
 			return CreateWindows(std::string(value));

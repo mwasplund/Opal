@@ -198,19 +198,21 @@ namespace Opal
 		std::string ToString() const
 		{
 			// "{Major}(.{Minor}(.{Patch}))"
-			std::stringstream stringBuilder;
-			stringBuilder << _major;
+			auto result = std::to_string(_major);
 			if (HasMinor())
 			{
-				stringBuilder << "." << GetMinor();
+				result.append(".");
+				result.append(std::to_string(_minor.value()));
+				
 				if (HasPatch())
 				{
-					stringBuilder << "." << GetPatch();
+					result.append(".");
+					result.append(std::to_string(_patch.value()));
+					return result;
 				}
 			}
 
-			auto value = std::string(std::move(stringBuilder).str());
-			return value;
+			return result;
 		}
 
 	private:

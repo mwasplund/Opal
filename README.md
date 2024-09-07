@@ -16,3 +16,6 @@ My old Dell XPS 15 with Win11
 |              123.78 |        8,078,929.17 |    1.6% |      0.15 | `SemanticVersion ToString Major Only`
 |              263.52 |        3,794,825.21 |    3.0% |      0.32 | `SemanticVersion ToString With Minor`
 |              385.18 |        2,596,170.08 |    0.9% |      0.48 | `SemanticVersion ToString With Minor and Path`
+|              161.78 |        6,181,405.77 |    3.4% |      0.20 | `SemanticVersion Parse Major Only`
+|              222.47 |        4,495,065.10 |    1.1% |      0.27 | `SemanticVersion Parse With Minor`
+|              265.01 |        3,773,480.62 |    1.7% |      0.32 | `SemanticVersion Parse With Minor and Path`

@@ -97,4 +97,28 @@ int main()
 			ankerl::nanobench::doNotOptimizeAway(e);
 		});
 	}
+
+	{
+		ankerl::nanobench::Bench().minEpochIterations(100000).run("SemanticVersion Parse Major Only", [&]
+		{
+			auto e = SemanticVersion::Parse("1");
+			ankerl::nanobench::doNotOptimizeAway(e);
+		});
+	}
+
+	{
+		ankerl::nanobench::Bench().minEpochIterations(100000).run("SemanticVersion Parse With Minor", [&]
+		{
+			auto e = SemanticVersion::Parse("1.2");
+			ankerl::nanobench::doNotOptimizeAway(e);
+		});
+	}
+
+	{
+		ankerl::nanobench::Bench().minEpochIterations(100000).run("SemanticVersion Parse With Minor and Path", [&]
+		{
+			auto e = SemanticVersion::Parse("1.2.3");
+			ankerl::nanobench::doNotOptimizeAway(e);
+		});
+	}
 }

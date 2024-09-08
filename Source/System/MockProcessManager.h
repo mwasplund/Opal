@@ -95,6 +95,13 @@ namespace Opal::System
 
 			_requests.push_back(message.str());
 
+			// Check if there is a registered callback
+			auto findCallback = _executeCallbacks.find(message.str());
+			if (findCallback != _executeCallbacks.end())
+			{
+				findCallback->second();
+			}
+
 			// Check if there is a registered output
 			auto findOutput = _executeResults.find(message.str());
 			if (findOutput != _executeResults.end())
@@ -114,13 +121,6 @@ namespace Opal::System
 					0,
 					std::string(),
 					std::string());
-			}
-			
-			// Check if there is a registered callback
-			auto findCallback = _executeCallbacks.find(message.str());
-			if (findCallback != _executeCallbacks.end())
-			{
-				findCallback->second();
 			}
 		}
 

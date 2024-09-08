@@ -564,9 +564,13 @@ namespace Opal
 						if (!IsRelativeDirectory(directory))
 						{
 							directories.push_back(RelativeDirectory);
+							fileName = directory;
 						}
-
-						fileName = directory;
+						else
+						{
+							// Saw a single relative directory
+							directories.push_back(directory);
+						}
 					}
 
 					isFirst = false;

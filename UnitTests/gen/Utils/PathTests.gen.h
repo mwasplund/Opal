@@ -21,6 +21,8 @@ TestState RunPathTests()
 	state += Soup::Test::RunTest(className, "Parse_LeaveParentDirectoryAtStart", [&testClass]() { testClass->Parse_LeaveParentDirectoryAtStart(); });
 	state += Soup::Test::RunTest(className, "Parse_CurrentDirectoryAtStart", [&testClass]() { testClass->Parse_CurrentDirectoryAtStart(); });
 	state += Soup::Test::RunTest(className, "Parse_CurrentDirectoryAtStartAlternate", [&testClass]() { testClass->Parse_CurrentDirectoryAtStartAlternate(); });
+	state += Soup::Test::RunTest(className, "Parse_RelativeOnly", [&testClass]() { testClass->Parse_RelativeOnly(); });
+	state += Soup::Test::RunTest(className, "Parse_UpOnly", [&testClass]() { testClass->Parse_UpOnly(); });
 	state += Soup::Test::RunTest(className, "Concatenate_Simple", [&testClass]() { testClass->Concatenate_Simple(); });
 	state += Soup::Test::RunTest(className, "Concatenate_Empty", [&testClass]() { testClass->Concatenate_Empty(); });
 	state += Soup::Test::RunTest(className, "Concatenate_RootFile", [&testClass]() { testClass->Concatenate_RootFile(); });

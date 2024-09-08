@@ -198,7 +198,7 @@ namespace Opal::System
 			{
 				// Reset the existing content offset and return it.
 				auto& content = file->second->Content;
-				content.seekg(0);
+				content.seekg(0, std::ios_base::beg);
 				result = std::make_shared<MockInputFile>(file->second);
 				return true;
 			}

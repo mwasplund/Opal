@@ -169,6 +169,20 @@ namespace Soup::UnitTests
 		}
 
 		// [[Fact]]
+		void Parse_RelativeOnly()
+		{
+			auto uut = Path::Parse(".");
+			Assert::AreEqual("./", uut.ToString(), "Verify string value matches.");
+		}
+
+		// [[Fact]]
+		void Parse_UpOnly()
+		{
+			auto uut = Path::Parse("..");
+			Assert::AreEqual("../", uut.ToString(), "Verify string value matches.");
+		}
+
+		// [[Fact]]
 		void Concatenate_Simple()
 		{
 			auto path1 = Path("C:/MyRootFolder/");

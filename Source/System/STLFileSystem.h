@@ -47,7 +47,7 @@ namespace Opal::System
 				buffer[userProfileLength + 1] = '\0';
 				return Path::CreateWindows(std::string(buffer.data(), userProfileLength + 1));
 			#elif defined(__linux__)
-				return Path(std::getenv("HOME"));
+				return Path(std::getenv("HOME") + std::string("/"));
 			#else
 				#error Unknown Platform
 			#endif
@@ -176,7 +176,24 @@ namespace Opal::System
 
 				return true;
 			#else
-				throw std::runtime_error("Not Implemented");
+				// Standard implementation
+				for (auto const& directoryEntry : std::filesystem::directory_iterator(path.ToString()))
+				{
+					auto filePath = Path();
+					if (directoryEntry.is_directory())
+					{
+						filePath = Path(directoryEntry.path().string() + "/");
+					}
+					else
+					{
+						filePath = Path(directoryEntry.path().string());
+					}
+
+					auto lastWriteTime = directoryEntry.last_write_time();
+					callback(filePath, lastWriteTime);
+				}
+
+				return true;
 			#endif
 		}
 

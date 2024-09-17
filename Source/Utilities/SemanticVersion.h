@@ -23,7 +23,7 @@ namespace Opal
 			auto firstSeparator = value.find_first_of('.');
 			if (firstSeparator == std::string_view::npos)
 			{
-				uint16_t majorVersion;
+				int majorVersion;
 				auto parseMajorResult = std::from_chars(
 					value.data(),
 					value.data() + value.size(),
@@ -39,7 +39,7 @@ namespace Opal
 			else
 			{
 				auto majorVersionText = value.substr(0, firstSeparator);
-				uint16_t majorVersion;
+				int majorVersion;
 				auto parseMajorResult = std::from_chars(
 					majorVersionText.data(),
 					majorVersionText.data() + majorVersionText.size(),
@@ -53,7 +53,7 @@ namespace Opal
 				if (lastSeparator == std::string_view::npos)
 				{
 					auto minorVersionText = value.substr(firstSeparator + 1);
-					uint16_t minorVersion;
+					int minorVersion;
 					auto parseMinorResult = std::from_chars(
 						minorVersionText.data(),
 						minorVersionText.data() + minorVersionText.size(),
@@ -69,7 +69,7 @@ namespace Opal
 				else
 				{
 					auto minorVersionText = value.substr(firstSeparator + 1, lastSeparator - firstSeparator - 1);
-					uint16_t minorVersion;
+					int minorVersion;
 					auto parseMinorResult = std::from_chars(
 						minorVersionText.data(),
 						minorVersionText.data() + minorVersionText.size(),
@@ -80,7 +80,7 @@ namespace Opal
 					}
 
 					auto patchVersionText = value.substr(lastSeparator + 1);
-					uint16_t patchVersion;
+					int patchVersion;
 					auto parsePatchResult = std::from_chars(
 						patchVersionText.data(),
 						patchVersionText.data() + patchVersionText.size(),
@@ -119,14 +119,14 @@ namespace Opal
 		{
 		}
 
-		SemanticVersion(uint16_t major) :
+		SemanticVersion(int major) :
 			_major(major),
 			_minor(std::nullopt),
 			_patch(std::nullopt)
 		{
 		}
 
-		SemanticVersion(uint16_t major, std::optional<uint16_t> minor) :
+		SemanticVersion(int major, std::optional<int> minor) :
 			_major(major),
 			_minor(minor),
 			_patch(std::nullopt)
@@ -136,7 +136,7 @@ namespace Opal
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SemanticVersion"/> class.
 		/// </summary>
-		SemanticVersion(uint16_t major, std::optional<uint16_t> minor, std::optional<uint16_t> patch) :
+		SemanticVersion(int major, std::optional<int> minor, std::optional<int> patch) :
 			_major(major),
 			_minor(minor),
 			_patch(patch)
@@ -146,7 +146,7 @@ namespace Opal
 		/// <summary>
 		/// Gets or sets the version major
 		/// </summary>
-		uint16_t GetMajor() const
+		int GetMajor() const
 		{
 			return _major;
 		}
@@ -158,13 +158,13 @@ namespace Opal
 		{
 			return _minor.has_value();
 		}
-		uint16_t GetMinor() const
+		int GetMinor() const
 		{
 			if (!HasMinor())
 				throw std::runtime_error("Semantic version does not have a minor value");
 			return _minor.value();
 		}
-		uint16_t GetMinorOrDefault() const
+		int GetMinorOrDefault() const
 		{
 			if (HasMinor())
 				return _minor.value();
@@ -179,13 +179,13 @@ namespace Opal
 		{
 			return _patch.has_value();
 		}
-		uint16_t GetPatch() const
+		int GetPatch() const
 		{
 			if (!HasPatch())
 				throw std::runtime_error("Semantic version does not have a patch value");
 			return _patch.value();
 		}
-		uint16_t GetPatchOrDefault() const
+		int GetPatchOrDefault() const
 		{
 			if (HasPatch())
 				return _patch.value();
@@ -253,8 +253,8 @@ namespace Opal
 		}
 
 	private:
-		uint16_t _major;
-		std::optional<uint16_t> _minor;
-		std::optional<uint16_t> _patch;
+		int _major;
+		std::optional<int> _minor;
+		std::optional<int> _patch;
 	};
 }

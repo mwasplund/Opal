@@ -177,7 +177,13 @@ namespace Opal::System
 				return true;
 			#else
 				// Standard implementation
-				for (auto const& directoryEntry : std::filesystem::directory_iterator(path.ToString()))
+				auto directoryPath = std::filesystem::path(path.ToString());
+				if (!std::filesystem::exists(directoryPath))
+				{
+					return false;
+				}
+
+				for (auto const& directoryEntry : std::filesystem::directory_iterator(directoryPath))
 				{
 					auto filePath = Path();
 					if (directoryEntry.is_directory())

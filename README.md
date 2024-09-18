@@ -6,16 +6,16 @@ My old Dell XPS 15 with Win11
 
 |               ns/op |                op/s |    err% |     total | benchmark
 |--------------------:|--------------------:|--------:|----------:|:----------
-|              472.95 |        2,114,401.83 |    1.9% |      0.06 | `Concatenate Paths`
-|            4,188.87 |          238,727.87 |    1.9% |      0.50 | `Concatenate Paths With Up Reference`
-|              172.74 |        5,789,114.15 |    1.4% |      0.21 | `Initialize Path With Root`
-|              274.30 |        3,645,670.04 |    1.7% |      0.33 | `Create Windows Path With Root`
-|              190.91 |        5,238,194.79 |    2.8% |      0.23 | `Initialize Path Relative`
-|            2,404.53 |          415,882.44 |    3.7% |      0.30 | `Get User Profile Directory`
-|            2,756.76 |          362,744.38 |    1.6% |      0.33 | `Get Current Directory`
-|              123.78 |        8,078,929.17 |    1.6% |      0.15 | `SemanticVersion ToString Major Only`
-|              263.52 |        3,794,825.21 |    3.0% |      0.32 | `SemanticVersion ToString With Minor`
-|              385.18 |        2,596,170.08 |    0.9% |      0.48 | `SemanticVersion ToString With Minor and Path`
-|              161.78 |        6,181,405.77 |    3.4% |      0.20 | `SemanticVersion Parse Major Only`
-|              222.47 |        4,495,065.10 |    1.1% |      0.27 | `SemanticVersion Parse With Minor`
-|              265.01 |        3,773,480.62 |    1.7% |      0.32 | `SemanticVersion Parse With Minor and Path`
+|               99.39 |       10,061,704.21 |    4.3% |      0.01 | `Concatenate Paths`
+|            1,360.93 |          734,790.81 |    1.9% |      0.17 | `Concatenate Paths With Up Reference`
+|               12.25 |       81,630,676.41 |    2.3% |      0.01 | `Initialize Path With Root`
+|               22.70 |       44,054,327.18 |    1.9% |      0.03 | `Create Windows Path With Root`
+|               12.25 |       81,627,610.39 |    2.3% |      0.01 | `Initialize Path Relative`
+|            2,483.51 |          402,656.33 |    3.7% |      0.30 | `Get User Profile Directory`
+|              652.29 |        1,533,060.45 |    4.5% |      0.08 | `Get Current Directory`
+|               10.78 |       92,772,984.51 |    2.5% |      0.01 | `SemanticVersion ToString Major Only`
+|               24.67 |       40,529,523.51 |    2.6% |      0.03 | `SemanticVersion ToString With Minor`
+|               38.48 |       25,984,810.93 |    3.5% |      0.05 | `SemanticVersion ToString With Minor and Path`
+|               14.03 |       71,251,652.40 |    2.3% |      0.02 | `SemanticVersion Parse Major Only`
+|               26.83 |       37,268,496.07 |    2.2% |      0.03 | `SemanticVersion Parse With Minor`
+|               38.17 |       26,197,729.46 |    3.9% |      0.05 | `SemanticVersion Parse With Minor and Path`

@@ -31,19 +31,23 @@ namespace Opal::System
 		Path GetUserProfileDirectory() override final
 		{
 			#ifdef _WIN32
-				char userProfile[MAX_PATH];
+				auto buffer = std::array<char, MAX_PATH + 2>();
 				HRESULT result = SHGetFolderPath(
 					nullptr,
 					CSIDL_PROFILE,
 					nullptr,
 					SHGFP_TYPE_CURRENT,
-					userProfile);
+					buffer.data());
 				if (result != S_OK)
 					throw std::runtime_error("SHGetFolderPath failed.");
 
-				return Path(userProfile);
+				// Ensure the directory ends with a separator
+				auto userProfileLength = strlen(buffer.data());
+				buffer[userProfileLength] = '\\';
+				buffer[userProfileLength + 1] = '\0';
+				return Path::CreateWindows(std::string(buffer.data(), userProfileLength + 1));
 			#elif defined(__linux__)
-				return Path(std::getenv("HOME"));
+				return Path(std::getenv("HOME") + std::string("/"));
 			#else
 				#error Unknown Platform
 			#endif
@@ -55,7 +59,7 @@ namespace Opal::System
 		Path GetCurrentDirectory() override final
 		{
 			auto current = std::filesystem::current_path();
-			return Path(current.string() + "/");
+			return Path::CreateWindows(std::format("{}/", current.string()));
 		}
 
 		/// <summary>
@@ -107,9 +111,9 @@ namespace Opal::System
 		/// <summary>
 		/// Get the last write time of all files in a directory
 		/// </summary>
-		void GetDirectoryFilesLastWriteTime(
+		bool TryGetDirectoryFilesLastWriteTime(
 			const Path& path,
-			std::function<void(const Path& file, std::filesystem::file_time_type)> callback) override final
+			std::function<void(const Path& file, std::filesystem::file_time_type)>& callback) override final
 		{
 			if (path.HasFileName())
 				throw std::runtime_error("Path was not a directory");
@@ -130,7 +134,7 @@ namespace Opal::System
 				{
 					auto error = GetLastError();
 					if (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND)
-						return;
+						return false;
 					else
 						throw std::runtime_error("FindFirstFileExA Failed");
 				}
@@ -138,17 +142,28 @@ namespace Opal::System
 				do
 				{
 					std::string_view fileName = findData.cFileName;
-					if (fileName == std::string_view(".."))
-					{
-						continue;
+					auto filePath = Path();
+					if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+	 				{
+						if (fileName == std::string_view(".."))
+						{
+							continue;
+						}
+						else if (fileName == std::string_view("."))
+						{
+							continue;
+						}
+						else
+						{
+							// Encode for Path
+							filePath = Path(std::format("./{}/", fileName));
+						}
 					}
-					else if (fileName == std::string_view("."))
+					else
 					{
-						// Encode for Path
-						fileName = "./";
+						filePath = Path(std::format("./{}", fileName));
 					}
 
-					auto filePath = Path(fileName);
 					auto lastWriteTimeDuration = std::chrono::file_clock::duration(
 						(static_cast<uint64_t>(findData.ftLastWriteTime.dwHighDateTime) << 32) |
 						static_cast<uint64_t>(findData.ftLastWriteTime.dwLowDateTime));
@@ -158,8 +173,33 @@ namespace Opal::System
 
 				if (!FindClose(findHandle))
 					throw std::runtime_error("Failed to close find handle");
+
+				return true;
 			#else
-				throw std::runtime_error("Not Implemented");
+				// Standard implementation
+				auto directoryPath = std::filesystem::path(path.ToString());
+				if (!std::filesystem::exists(directoryPath))
+				{
+					return false;
+				}
+
+				for (auto const& directoryEntry : std::filesystem::directory_iterator(directoryPath))
+				{
+					auto filePath = Path();
+					if (directoryEntry.is_directory())
+					{
+						filePath = Path(directoryEntry.path().string() + "/");
+					}
+					else
+					{
+						filePath = Path(directoryEntry.path().string());
+					}
+
+					auto lastWriteTime = directoryEntry.last_write_time();
+					callback(filePath, lastWriteTime);
+				}
+
+				return true;
 			#endif
 		}
 
@@ -174,6 +214,27 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
+		bool TryOpenRead(const Path& path, bool isBinary, std::shared_ptr<IInputFile>& result) override final
+		{
+			std::ios_base::openmode mode = std::fstream::in;
+			if (isBinary)
+			{
+				mode = static_cast<std::ios_base::openmode>(mode | std::fstream::binary);
+			}
+
+			auto file = std::ifstream(path.ToString(), mode);
+			if (file.fail())
+			{
+				result = nullptr;
+				return false;
+			}
+			else
+			{
+				result = std::make_shared<STLInputFile>(std::move(file));
+				return true;
+			}
+		}
+
 		std::shared_ptr<IInputFile> OpenRead(const Path& path, bool isBinary) override final
 		{
 			std::ios_base::openmode mode = std::fstream::in;
@@ -226,7 +287,7 @@ namespace Opal::System
 		/// <summary>
 		/// Copy the source file to the destination
 		/// </summary>
-		void CopyFile2(const Path& source, const Path& destination) override final
+		void CopyFile(const Path& source, const Path& destination) override final
 		{
 			std::filesystem::copy(
 				source.ToString(),
@@ -237,7 +298,7 @@ namespace Opal::System
 		/// <summary>
 		/// Create the directory at the requested path
 		/// </summary>
-		void CreateDirectory2(const Path& path) override final
+		void CreateDirectory(const Path& path) override final
 		{
 			std::filesystem::create_directories(path.ToString());
 		}

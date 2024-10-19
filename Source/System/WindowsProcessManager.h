@@ -46,7 +46,7 @@ namespace Opal::System
 				throw std::runtime_error("Ran out of room in the buffer");
 			}
 
-			return Path(std::string(buffer.data(), sizeRead));
+			return Path::CreateWindows(std::string(buffer.data(), sizeRead));
 		}
 
 		/// <summary>

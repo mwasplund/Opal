@@ -4,6 +4,7 @@
 
 #pragma once
 #include "IFileSystem.h"
+#include "MockDirectory.h"
 #include "MockFile.h"
 
 namespace Opal::System
@@ -14,12 +15,18 @@ namespace Opal::System
 	/// </summary>
 	export class MockFileSystem : public IFileSystem
 	{
+	private:
+		std::vector<std::string> _requests;
+		std::map<Path, std::shared_ptr<MockDirectory>> _directories;
+		std::map<Path, std::shared_ptr<MockFile>> _files;
+
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref='MockFileSystem'/> class.
 		/// </summary>
 		MockFileSystem() :
 			_requests(),
+			_directories(),
 			_files()
 		{
 		}
@@ -30,6 +37,16 @@ namespace Opal::System
 		const std::vector<std::string>& GetRequests() const
 		{
 			return _requests;
+		}
+
+		/// <summary>
+		/// Create a test directory
+		/// </summary>
+		void CreateMockDirectory(Path path, std::shared_ptr<MockDirectory> directory)
+		{
+			_directories.emplace(
+				std::move(path),
+				std::move(directory));
 		}
 
 		/// <summary>
@@ -88,14 +105,22 @@ namespace Opal::System
 			message << "Exists: " << path.ToString();
 			_requests.push_back(message.str());
 
-			auto file = _files.find(path);
-			return file != _files.end();
+			if (path.HasFileName())
+			{
+				auto file = _files.find(path);
+				return file != _files.end();
+			}
+			else
+			{
+				auto directory = _directories.find(path);
+				return directory != _directories.end();
+			}
 		}
 
 		/// <summary>
 		/// Get the last write time of the file/directory
 		/// </summary>
-		 bool TryGetLastWriteTime(const Path& path, std::filesystem::file_time_type& value) override final
+		bool TryGetLastWriteTime(const Path& path, std::filesystem::file_time_type& value) override final
 		{
 			std::stringstream message;
 			message << "TryGetLastWriteTime: " << path.ToString();
@@ -116,13 +141,30 @@ namespace Opal::System
 		/// <summary>
 		/// Get the last write time of all files in a directory
 		/// </summary>
-		void GetDirectoryFilesLastWriteTime(
+		bool TryGetDirectoryFilesLastWriteTime(
 			const Path& path,
-			std::function<void(const Path& file, std::filesystem::file_time_type)> callback) override final
+			std::function<void(const Path& file, std::filesystem::file_time_type)>& callback) override final
 		{
 			std::stringstream message;
-			message << "GetDirectoryFilesLastWriteTime: " << path.ToString();
+			message << "TryGetDirectoryFilesLastWriteTime: " << path.ToString();
 			_requests.push_back(message.str());
+
+			auto directory = _directories.find(path);
+			if (directory == _directories.end())
+			{
+				return false;
+			}
+			else
+			{
+				callback(Path("./"), directory->second->LastWriteTime);
+
+				for (auto& child : directory->second->Children)
+				{
+					callback(child, directory->second->LastWriteTime);
+				}
+
+				return true;
+			}
 		}
 
 		/// <summary>
@@ -138,6 +180,35 @@ namespace Opal::System
 		/// <summary>
 		/// Open the requested file as a stream to read
 		/// </summary>
+		bool TryOpenRead(const Path& path, bool isBinary, std::shared_ptr<IInputFile>& result) override final
+		{
+			std::stringstream message;
+			if (isBinary)
+			{
+				message << "TryOpenReadBinary: " << path.ToString();
+			}
+			else
+			{
+				message << "TryOpenRead: " << path.ToString();
+			}
+			_requests.push_back(message.str());
+
+			auto file = _files.find(path);
+			if (file != _files.end())
+			{
+				// Reset the existing content offset and return it.
+				auto& content = file->second->Content;
+				content.seekg(0, std::ios_base::beg);
+				result = std::make_shared<MockInputFile>(file->second);
+				return true;
+			}
+			else
+			{
+				result = nullptr;
+				return false;
+			}
+		}
+
 		std::shared_ptr<IInputFile> OpenRead(const Path& path, bool isBinary) override final
 		{
 			std::stringstream message;
@@ -212,7 +283,7 @@ namespace Opal::System
 		/// <summary>
 		/// Copy the source file to the destination
 		/// </summary>
-		void CopyFile2(const Path& source, const Path& destination) override final
+		void CopyFile(const Path& source, const Path& destination) override final
 		{
 			std::stringstream message;
 			message << "CopyFile: [" << source.ToString() << "] -> [" << destination.ToString() << "]";
@@ -222,7 +293,7 @@ namespace Opal::System
 		/// <summary>
 		/// Create the directory at the requested path
 		/// </summary>
-		void CreateDirectory2(const Path& path) override final
+		void CreateDirectory(const Path& path) override final
 		{
 			std::stringstream message;
 			message << "CreateDirectory: " << path.ToString();
@@ -256,9 +327,5 @@ namespace Opal::System
 			message << path.ToString();
 			_requests.push_back(message.str());
 		}
-
-	private:
-		std::vector<std::string> _requests;
-		std::map<Path, std::shared_ptr<MockFile>> _files;
 	};
 }

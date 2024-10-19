@@ -19,19 +19,81 @@ namespace Opal
 		/// </summary>
 		static bool TryParse(const std::string_view value, SemanticVersion& result)
 		{
-			// TODO: Invert this so TryParse is the default and Parse adds an exception
-			// it is way faster in the fail case
-			try
+			// Parse the integer values
+			auto firstSeparator = value.find_first_of('.');
+			if (firstSeparator == std::string_view::npos)
 			{
-				result = Parse(value);
+				int majorVersion;
+				auto parseMajorResult = std::from_chars(
+					value.data(),
+					value.data() + value.size(),
+					majorVersion);
+				if (parseMajorResult.ec == std::errc::invalid_argument) {
+					result = SemanticVersion();
+					return false;
+				}
+
+				result = SemanticVersion(majorVersion);
 				return true;
 			}
-			catch (...)
+			else
 			{
-			}
+				auto majorVersionText = value.substr(0, firstSeparator);
+				int majorVersion;
+				auto parseMajorResult = std::from_chars(
+					majorVersionText.data(),
+					majorVersionText.data() + majorVersionText.size(),
+					majorVersion);
+				if (parseMajorResult.ec == std::errc::invalid_argument) {
+					result = SemanticVersion();
+					return false;
+				}
 
-			result = SemanticVersion();
-			return false;
+				auto lastSeparator = value.find_first_of('.', firstSeparator + 1);
+				if (lastSeparator == std::string_view::npos)
+				{
+					auto minorVersionText = value.substr(firstSeparator + 1);
+					int minorVersion;
+					auto parseMinorResult = std::from_chars(
+						minorVersionText.data(),
+						minorVersionText.data() + minorVersionText.size(),
+						minorVersion);
+					if (parseMinorResult.ec == std::errc::invalid_argument) {
+						result = SemanticVersion();
+						return false;
+					}
+
+					result = SemanticVersion(majorVersion, minorVersion);
+					return true;
+				}
+				else
+				{
+					auto minorVersionText = value.substr(firstSeparator + 1, lastSeparator - firstSeparator - 1);
+					int minorVersion;
+					auto parseMinorResult = std::from_chars(
+						minorVersionText.data(),
+						minorVersionText.data() + minorVersionText.size(),
+						minorVersion);
+					if (parseMinorResult.ec == std::errc::invalid_argument) {
+						result = SemanticVersion();
+						return false;
+					}
+
+					auto patchVersionText = value.substr(lastSeparator + 1);
+					int patchVersion;
+					auto parsePatchResult = std::from_chars(
+						patchVersionText.data(),
+						patchVersionText.data() + patchVersionText.size(),
+						patchVersion);
+					if (parsePatchResult.ec == std::errc::invalid_argument) {
+						result = SemanticVersion();
+						return false;
+					}
+
+					result = SemanticVersion(majorVersion, minorVersion, patchVersion);
+					return true;
+				}
+			}
 		}
 
 		/// <summary>
@@ -39,36 +101,11 @@ namespace Opal
 		/// </summary>
 		static SemanticVersion Parse(const std::string_view value)
 		{
-			// Parse the integer values
-			// TODO: Perform my own search to save string creation
-			std::vector<short> values;
-			auto stream = std::istringstream(std::string(value));
-			std::string stringValue;
-			while (std::getline(stream, stringValue, '.'))
-			{
-				auto intValue = std::stoi(stringValue);
-				values.push_back(static_cast<short>(intValue));
-			}
-			
-			if (values.size() < 1 || values.size() > 3)
-			{
-				throw std::runtime_error("The version string must one to three values.");
-			}
-
-			auto major = values[0];
-
-			std::optional<int> minor = std::nullopt;
-			if (values.size() >= 2)
-				minor = values[1];
-
-			std::optional<int> patch = std::nullopt;
-			if (values.size() >= 3)
-				patch = values[2];
-
-			return SemanticVersion(
-				major,
-				minor,
-				patch);
+			SemanticVersion result;
+			if (TryParse(value, result))
+				return result;
+			else
+				throw new std::runtime_error("Invalid semantic version");
 		}
 
 	public:
@@ -198,19 +235,21 @@ namespace Opal
 		std::string ToString() const
 		{
 			// "{Major}(.{Minor}(.{Patch}))"
-			std::stringstream stringBuilder;
-			stringBuilder << _major;
+			auto result = std::to_string(_major);
 			if (HasMinor())
 			{
-				stringBuilder << "." << GetMinor();
+				result.append(".");
+				result.append(std::to_string(_minor.value()));
+				
 				if (HasPatch())
 				{
-					stringBuilder << "." << GetPatch();
+					result.append(".");
+					result.append(std::to_string(_patch.value()));
+					return result;
 				}
 			}
 
-			auto value = std::string(std::move(stringBuilder).str());
-			return value;
+			return result;
 		}
 
 	private:

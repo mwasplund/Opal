@@ -22,7 +22,8 @@ namespace Opal::System
 			m_uniqueId(1),
 			_requests(),
 			_processFileName(Path("C:/testlocation/SoupCMDTest.exe")),
-			_executeResults()
+			_executeResults(),
+			_executeCallbacks()
 		{
 		}
 
@@ -32,7 +33,8 @@ namespace Opal::System
 		MockProcessManager(Path processFileName) :
 			_requests(),
 			_processFileName(std::move(processFileName)),
-			_executeResults()
+			_executeResults(),
+			_executeCallbacks()
 		{
 		}
 
@@ -44,6 +46,16 @@ namespace Opal::System
 			_executeResults.emplace(
 				std::move(command),
 				std::move(output));
+		}
+
+		/// <summary>
+		/// Create a callback 
+		/// </summary>
+		void RegisterExecuteCallback(std::string command, std::function<void()> callback)
+		{
+			_executeCallbacks.emplace(
+				std::move(command),
+				std::move(callback));
 		}
 
 		/// <summary>
@@ -83,6 +95,13 @@ namespace Opal::System
 
 			_requests.push_back(message.str());
 
+			// Check if there is a registered callback
+			auto findCallback = _executeCallbacks.find(message.str());
+			if (findCallback != _executeCallbacks.end())
+			{
+				findCallback->second();
+			}
+
 			// Check if there is a registered output
 			auto findOutput = _executeResults.find(message.str());
 			if (findOutput != _executeResults.end())
@@ -110,5 +129,6 @@ namespace Opal::System
 		std::vector<std::string> _requests;
 		Path _processFileName;
 		std::map<std::string, std::string> _executeResults;
+		std::map<std::string, std::function<void()>> _executeCallbacks;
 	};
 }

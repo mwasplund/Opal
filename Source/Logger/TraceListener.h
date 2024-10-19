@@ -120,6 +120,30 @@ namespace Opal
 				WriteLine(builder.str());
 		}
 
+		template<typename... Args>
+		void TraceEvent(
+			TraceEventFlag eventType,
+			int id,
+			std::string_view message,
+			Args&&... args)
+		{
+			if (HasFilter() && ! _filter->ShouldTrace(eventType))
+			{
+				return;
+			}
+
+			// Build up the resulting message with required header/footer
+			auto builder = std::stringstream();
+			WriteHeader(builder, eventType, id);
+			builder << std::vformat(message, std::make_format_args(args...));
+
+			bool isEmpty = builder.rdbuf()->in_avail() == 0;
+			if (isEmpty)
+				WriteLine("");
+			else
+				WriteLine(builder.str());
+		}
+
 		/// <summary>
 		/// Trace Event
 		/// </summary>
